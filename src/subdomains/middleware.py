@@ -1,6 +1,7 @@
 import re
 from django.conf import settings
 from django.contrib.sites.models import Site
+from subdomains.exceptions import IncorrectSiteException
 
 class SubdomainMiddleware(object):
     def process_request(self, request):
@@ -10,13 +11,14 @@ class SubdomainMiddleware(object):
         attribute.
         """
         site = Site.objects.get_current()
-        pattern = r'^(?:(?P<subdomain>.*?)\.)?%s:*$' % re.escape(site.domain)
+        pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(site.domain)
         matches = re.match(pattern, request.get_host())
-        
-        request.subdomain = None
         
         if matches:
             request.subdomain = matches.group('subdomain')
+        else:
+            raise IncorrectSiteException('The current host, %s, does not match '
+                'the Site instance specified by SITE_ID.' % request.get_host())
         
         # Continue processing the request as normal.
         return None

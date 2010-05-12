@@ -6,8 +6,10 @@
 `MIDDLEWARE_CLASSES` in your Django settings file.
 2. Set up your `SUBDOMAIN_URLCONFS` dictionary in your Django settings file.
 (See the example below.)
-3. ???
-4. Profit!
+3. Make sure that you've set up your `SITE_ID` in your Django settings file, 
+and that the `domain` attribute corresponds to the proper domain name.
+4. ???
+5. Profit!
 
 ## Example Configuration
 
