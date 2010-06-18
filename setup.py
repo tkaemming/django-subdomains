@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'django-subdomains',
-    version = '1.0.1',
+    version = '1.1.0',
     url = 'http://github.com/tkaemming/django-subdomains/',
     packages = find_packages('src'),
     package_dir = {'': 'src'},

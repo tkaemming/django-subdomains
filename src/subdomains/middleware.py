@@ -1,7 +1,10 @@
 import re
+import warnings
 from django.utils.cache import patch_vary_headers
 from django.conf import settings
 from django.contrib.sites.models import Site
+from subdomains.exceptions import IncorrectSiteException
+from subdomains.settings import USE_SUBDOMAIN_EXCEPTION
 
 class SubdomainMiddleware(object):
     def process_request(self, request):
@@ -19,12 +22,14 @@ class SubdomainMiddleware(object):
         if matches:
             request.subdomain = matches.group('subdomain')
         else:
-            import warnings
-            warnings.warn('The current host, %s, does not match the Site '
-                'instance specified by SITE_ID. The URLconf for this host '
-                'will fall back to the ROOT_URLCONF.'
-                % request.get_host(),
-                UserWarning)
+            error = 'The current host, %s, does not match the Site instance ' \
+                'specified by SITE_ID.' % request.get_host()
+            
+            if USE_SUBDOMAIN_EXCEPTION:
+                raise IncorrectSiteException(error)
+            else:
+                warnings.warn('%s The URLconf for this host will fall back to '
+                    'the ROOT_URLCONF.' % error, UserWarning)
         
         # Continue processing the request as normal.
         return None
