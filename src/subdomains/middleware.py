@@ -4,7 +4,7 @@ from django.utils.cache import patch_vary_headers
 from django.conf import settings
 from django.contrib.sites.models import Site
 from subdomains.exceptions import IncorrectSiteException
-from subdomains.settings import USE_SUBDOMAIN_EXCEPTION
+from subdomains.settings import USE_SUBDOMAIN_EXCEPTION, REMOVE_WWW_FROM_SUBDOMAIN
 
 class SubdomainMiddleware(object):
     def process_request(self, request):
@@ -14,7 +14,10 @@ class SubdomainMiddleware(object):
         attribute.
         """
         site = Site.objects.get_current()
-        pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(site.domain)
+        domain = site.domain
+        if REMOVE_WWW_FROM_SUBDOMAIN and domain.startswith("www."):
+            domain = domain.replace("www.", "", 1)
+        pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(domain)
         matches = re.match(pattern, request.get_host())
         
         request.subdomain = None
