@@ -55,3 +55,10 @@ name does not match the `django.contrib.sites.models.Site` instance specified
 by your `SITE_ID`. This setting defaults to `False`, and will instead throw a
 warning that will not prevent your application from continuing if the `Site` 
 is incorrect.
+
+### REMOVE_WWW_FROM_SUBDOMAIN
+
+If `REMOVE_WWW_FROM_SUBDOMAIN` is set to `True`, Site models will have the
+"www." portion of stripped before processing. This allows for "www.example.com"
+to be used in the Site's `domain` attribute, without subdomains being resolved to
+"___.www.example.com".
