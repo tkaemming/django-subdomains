@@ -20,7 +20,7 @@ class SubdomainMiddleware(object):
             domain = domain.replace("www.", "", 1)
 
         if USE_FULLY_QUALIFIED_DOMAINS:
-            request.subdomain = site.domain
+            request.subdomain = request.get_host()
         else:
             pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(domain)
             matches = re.match(pattern, request.get_host())
@@ -52,7 +52,6 @@ class SubdomainURLRoutingMiddleware(SubdomainMiddleware):
         super(SubdomainURLRoutingMiddleware, self).process_request(request)
 
         subdomain = getattr(request, 'subdomain', False)
-
         if subdomain is not False:
             try:
                 request.urlconf = settings.SUBDOMAIN_URLCONFS[subdomain]
