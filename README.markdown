@@ -63,7 +63,6 @@ If `REMOVE_WWW_FROM_SUBDOMAIN` is set to `True`, Site models will have the
 to be used in the Site's `domain` attribute, without subdomains being resolved to
 "___.www.example.com".
 
-
 ### `USE_FULLY_QUALIFIED_DOMAINS`
 
 If `USE_FULLY_QUALIFIED_DOMAINS` is set to `True`, the key for SUBDOMAIN_URLCONFS 
