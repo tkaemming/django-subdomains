@@ -62,3 +62,11 @@ If `REMOVE_WWW_FROM_SUBDOMAIN` is set to `True`, Site models will have the
 "www." portion of stripped before processing. This allows for "www.example.com"
 to be used in the Site's `domain` attribute, without subdomains being resolved to
 "___.www.example.com".
+
+
+### `USE_FULLY_QUALIFIED_DOMAINS`
+
+If `USE_FULLY_QUALIFIED_DOMAINS` is set to `True`, the key for SUBDOMAIN_URLCONFS 
+is expected to be a fully-qualified domain.  This allows django-subdomain to 
+serve as a url-routing mechanism between multiple websites that share the same
+codebase.
