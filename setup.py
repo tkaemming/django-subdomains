@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(name='django-subdomains',
     version='1.1.2',
@@ -8,8 +8,7 @@ setup(name='django-subdomains',
     author_email='ted@kaemming.com',
     description="Subdomain tools for the Django framework, including "
         "subdomain-based URL routing.",
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
+    packages=('subdomains',),
     include_package_data=True,
     install_requires=['setuptools'],
     zip_safe=False
