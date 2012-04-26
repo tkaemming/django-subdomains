@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(name='django-subdomains',
-    version='1.1.2',
+    version='1.2.0',
     url='http://github.com/tkaemming/django-subdomains/',
     author='ted kaemming',
     author_email='ted@kaemming.com',
