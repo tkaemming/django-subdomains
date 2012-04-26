@@ -18,13 +18,17 @@ class SubdomainMiddleware(object):
         site = Site.objects.get_current()
         domain = site.domain
 
+        # To allow for case-insensitive comparison, force the site.domain and 
+        # the HTTP Host to lowercase.
+        domain, host = domain.lower(), request.get_host().lower()
+
         REMOVE_WWW_FROM_DOMAIN = getattr(settings, 'REMOVE_WWW_FROM_DOMAIN',
             False)
         if REMOVE_WWW_FROM_DOMAIN and domain.startswith("www."):
             domain = domain.replace("www.", "", 1)
 
         pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(domain)
-        matches = re.match(pattern, request.get_host())
+        matches = re.match(pattern, host)
 
         request.subdomain = None
 

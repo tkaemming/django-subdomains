@@ -66,6 +66,17 @@ class SubdomainMiddlewareTestCase(TestCase):
             self.assertEqual(host('subdomain.www.example.com'),
                 'subdomain.www')
 
+    def test_case_insensitive_subdomain(self):
+        host = 'WWW.example.com'
+        request = RequestFactory().get('/', HTTP_HOST=host)
+        self.middleware.process_request(request)
+        self.assertEqual(request.subdomain, 'www')
+
+        host = 'www.EXAMPLE.com'
+        request = RequestFactory().get('/', HTTP_HOST=host)
+        self.middleware.process_request(request)
+        self.assertEqual(request.subdomain, 'www')
+
 
 class SubdomainURLRoutingTestCase(TestCase):
     def setUp(self):
