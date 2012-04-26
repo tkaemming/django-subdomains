@@ -11,4 +11,7 @@ check:
 test:
 	PYTHONPATH=".:${PYTHONPATH}" python tests/manage.py test --verbosity=2
 
-.PHONY: check install install-dev test
+publish:
+	python setup.py sdist upload
+
+.PHONY: check install install-dev publish test
