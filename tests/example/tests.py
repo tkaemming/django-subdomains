@@ -4,7 +4,8 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from subdomains.middleware import SubdomainMiddleware
+from subdomains.middleware import (SubdomainMiddleware,
+    SubdomainURLRoutingMiddleware)
 
 
 class SubdomainMiddlewareTestCase(TestCase):
@@ -64,3 +65,29 @@ class SubdomainMiddlewareTestCase(TestCase):
             self.assertEqual(host('subdomain.example.com'), 'subdomain')
             self.assertEqual(host('subdomain.www.example.com'),
                 'subdomain.www')
+
+
+class SubdomainURLRoutingTestCase(TestCase):
+    def setUp(self):
+        self.site = Site.objects.get_current()
+        self.middleware = SubdomainURLRoutingMiddleware()
+
+    def test_url_routing(self):
+        def urlconf(subdomain):
+            """
+            Returns the URLconf associated with this request.
+            """
+            if subdomain is not None:
+                host = '%s.%s' % (subdomain, self.site.domain)
+            else:
+                host = '%s' % self.site.domain
+            request = RequestFactory().get('/', HTTP_HOST=host)
+            self.middleware.process_request(request)
+            return getattr(request, 'urlconf', None)
+
+        self.assertEqual(urlconf(None), 'example.urls.marketing')
+        self.assertEqual(urlconf('www'), 'example.urls.marketing')
+        self.assertEqual(urlconf('api'), 'example.urls.api')
+
+        # Falls through to the actual ROOT_URLCONF.
+        self.assertEqual(urlconf('subdomain'), None)

@@ -14,8 +14,12 @@ MIDDLEWARE_CLASSES = (
     'subdomains.middleware.SubdomainURLRoutingMiddleware',
 )
 
-ROOT_URLCONF = 'example.urls'
-SUBDOMAIN_URLCONFS = {}
+ROOT_URLCONF = 'example.urls.application'
+SUBDOMAIN_URLCONFS = {
+    None: 'example.urls.marketing',
+    'api': 'example.urls.api',
+    'www': 'example.urls.marketing',
+}
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'example.wsgi.application'
