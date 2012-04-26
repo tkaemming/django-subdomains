@@ -77,7 +77,7 @@ by your `SITE_ID`. This setting defaults to `False`, and will instead throw a
 warning that will not prevent your application from continuing if the `Site` 
 is incorrect.
 
-### `REMOVE_WWW_FROM_SUBDOMAIN`
+### `REMOVE_WWW_FROM_DOMAIN`
 
 Default: `False`
 
