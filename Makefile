@@ -9,6 +9,6 @@ check:
 	pep8 --repeat --show-source ./
 
 test:
-	python tests/manage.py test --verbosity=2
+	PYTHONPATH=".:${PYTHONPATH}" python tests/manage.py test --verbosity=2
 
 .PHONY: check install install-dev test

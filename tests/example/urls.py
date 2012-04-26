@@ -1,3 +1,8 @@
-from django.conf.urls import patterns
+from django.conf.urls import patterns, url
 
-urlpatterns = patterns('',)
+from example.views import view
+
+
+urlpatterns = patterns('',
+    url(regex=r'^$', view=view),
+)

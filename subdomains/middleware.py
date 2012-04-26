@@ -6,8 +6,6 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 
 from subdomains.exceptions import IncorrectSiteException
-from subdomains.settings import (USE_SUBDOMAIN_EXCEPTION,
-    REMOVE_WWW_FROM_DOMAIN)
 
 
 class SubdomainMiddleware(object):
@@ -19,8 +17,12 @@ class SubdomainMiddleware(object):
         """
         site = Site.objects.get_current()
         domain = site.domain
+
+        REMOVE_WWW_FROM_DOMAIN = getattr(settings, 'REMOVE_WWW_FROM_DOMAIN',
+            False)
         if REMOVE_WWW_FROM_DOMAIN and domain.startswith("www."):
             domain = domain.replace("www.", "", 1)
+
         pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(domain)
         matches = re.match(pattern, request.get_host())
 
@@ -32,7 +34,7 @@ class SubdomainMiddleware(object):
             error = 'The current host, %s, does not match the Site instance ' \
                 'specified by SITE_ID.' % request.get_host()
 
-            if USE_SUBDOMAIN_EXCEPTION:
+            if getattr(settings, 'USE_SUBDOMAIN_EXCEPTION', False):
                 raise IncorrectSiteException(error)
             else:
                 warnings.warn('%s The URLconf for this host will fall back to '
