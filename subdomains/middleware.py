@@ -1,9 +1,9 @@
 import re
 import warnings
 
-from django.utils.cache import patch_vary_headers
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.utils.cache import patch_vary_headers
 
 from subdomains.exceptions import IncorrectSiteException
 
