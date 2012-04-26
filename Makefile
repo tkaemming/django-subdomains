@@ -8,4 +8,7 @@ check:
 	pyflakes ./
 	pep8 --repeat --show-source ./
 
-.PHONY: check install install-dev
+test:
+	python tests/manage.py test --verbosity=2
+
+.PHONY: check install install-dev test
