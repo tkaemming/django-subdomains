@@ -2,6 +2,25 @@
 
 ## Installation
 
+This application is available via the
+[Python Package Index](http://pypi.python.org/pypi/django-subdomains) and can
+be installed with any Python package manager, such as `pip` or `easy_install`
+by running:
+
+    pip install django-subdomains
+
+or
+
+    easy_install django-subdomains
+
+It is highly recommended to use package version numbers to ensure API
+consistency.
+
+To install the latest version from the repository source, clone the repository
+and then run `make install` in the repository directory.
+
+## Configuring Django Settings
+
 1. Add `subdomains.middleware.SubdomainURLRoutingMiddleware` to your
 `MIDDLEWARE_CLASSES` in your Django settings file.
 2. Set up your `SUBDOMAIN_URLCONFS` dictionary in your Django settings file.
@@ -49,6 +68,8 @@ associate requests with user accounts based on subdomain, etc.
 
 ### `USE_SUBDOMAIN_EXCEPTION`
 
+Default: `False`
+
 If `USE_SUBDOMAIN_EXCEPTION` is set to `True`, an 
 `subdomains.exceptions.IncorrectSiteException` will be raised if the domain
 name does not match the `django.contrib.sites.models.Site` instance specified
@@ -56,9 +77,17 @@ by your `SITE_ID`. This setting defaults to `False`, and will instead throw a
 warning that will not prevent your application from continuing if the `Site` 
 is incorrect.
 
-### REMOVE_WWW_FROM_SUBDOMAIN
+### `REMOVE_WWW_FROM_SUBDOMAIN`
 
-If `REMOVE_WWW_FROM_SUBDOMAIN` is set to `True`, Site models will have the
-"www." portion of stripped before processing. This allows for "www.example.com"
-to be used in the Site's `domain` attribute, without subdomains being resolved to
-"___.www.example.com".
+Default: `False`
+
+If `REMOVE_WWW_FROM_DOMAIN` is set to `True`, the `domain` attribute of the
+`Site` model will have the `www.` portion stripped before processing. This 
+allows for "www.example.com" to be used in the `Site`'s `domain` attribute,
+without subdomains being resolved to "___.www.example.com".
+
+## Contributing
+
+Before submitting a patch, please make sure to run the test suite, as well as
+pyflakes and PEP8 checks. These can be ran from the repository with the command
+`make check test`.
