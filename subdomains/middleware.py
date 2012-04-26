@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 
 from subdomains.exceptions import IncorrectSiteException
 from subdomains.settings import (USE_SUBDOMAIN_EXCEPTION,
-    REMOVE_WWW_FROM_SUBDOMAIN)
+    REMOVE_WWW_FROM_DOMAIN)
 
 
 class SubdomainMiddleware(object):
@@ -19,7 +19,7 @@ class SubdomainMiddleware(object):
         """
         site = Site.objects.get_current()
         domain = site.domain
-        if REMOVE_WWW_FROM_SUBDOMAIN and domain.startswith("www."):
+        if REMOVE_WWW_FROM_DOMAIN and domain.startswith("www."):
             domain = domain.replace("www.", "", 1)
         pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(domain)
         matches = re.match(pattern, request.get_host())
