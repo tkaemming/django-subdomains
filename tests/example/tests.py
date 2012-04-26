@@ -50,9 +50,10 @@ class SubdomainMiddlewareTestCase(TestCase):
             # already know that this is an invalid subdomain.
             with warnings.catch_warnings(record=True) as warnlist:
                 self.assertEqual(host('www.subdomain.example.com'), None)
+                self.assertEqual(host('subdomain.example.com'), None)
 
             # Trick pyflakes into not warning us about variable usage.
-            warnlist
+            del warnlist
 
             self.assertEqual(host('subdomain.www.example.com'), 'subdomain')
             self.assertEqual(host('www.subdomain.www.example.com'),
@@ -60,5 +61,6 @@ class SubdomainMiddlewareTestCase(TestCase):
 
         with self.settings(REMOVE_WWW_FROM_DOMAIN=True):
             self.assertEqual(host('www.example.com'), 'www')
+            self.assertEqual(host('subdomain.example.com'), 'subdomain')
             self.assertEqual(host('subdomain.www.example.com'),
                 'subdomain.www')
