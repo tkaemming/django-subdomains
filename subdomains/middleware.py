@@ -18,7 +18,7 @@ class SubdomainMiddleware(object):
         site = Site.objects.get_current()
         domain = site.domain
 
-        # To allow for case-insensitive comparison, force the site.domain and 
+        # To allow for case-insensitive comparison, force the site.domain and
         # the HTTP Host to lowercase.
         domain, host = domain.lower(), request.get_host().lower()
 
