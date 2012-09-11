@@ -24,7 +24,6 @@ class SubdomainTestMixin(object):
         return host
 
 
-
 class SubdomainMiddlewareTestCase(SubdomainTestMixin, TestCase):
     def setUp(self):
         super(SubdomainMiddlewareTestCase, self).setUp()
