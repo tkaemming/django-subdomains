@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from setuptools import setup
 
+install_requires = ['django']
+
 setup(name='django-subdomains',
     version='1.2.1',
     url='http://github.com/tkaemming/django-subdomains/',
@@ -10,7 +12,7 @@ setup(name='django-subdomains',
         "subdomain-based URL routing.",
     packages=('subdomains',),
     include_package_data=True,
-    install_requires=['setuptools'],
+    install_requires=install_requires,
     zip_safe=False,
     license='MIT License',
 )
