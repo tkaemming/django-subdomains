@@ -10,20 +10,34 @@ from subdomains.middleware import (SubdomainMiddleware,
 from subdomains.utils import reverse, urljoin
 
 
-class SubdomainMiddlewareTestCase(TestCase):
+class SubdomainTestMixin(object):
     def setUp(self):
+        super(SubdomainTestMixin, self).setUp()
         self.site = Site.objects.get_current()
+
+    def get_host_for_subdomain(self, subdomain=None):
+        """
+        Returns the hostname for the provided subdomain.
+        """
+        if subdomain is not None:
+            host = '%s.%s' % (subdomain, self.site.domain)
+        else:
+            host = '%s' % self.site.domain
+        return host
+
+
+class SubdomainMiddlewareTestCase(SubdomainTestMixin, TestCase):
+    def setUp(self):
+        super(SubdomainMiddlewareTestCase, self).setUp()
         self.middleware = SubdomainMiddleware()
 
     def test_subdomain_attribute(self):
         def subdomain(subdomain):
             """
-            Returns the request.subdomain for the provided subdomain.
+            Returns the subdomain associated with the request by the middleware
+            for the given subdomain.
             """
-            if subdomain is not None:
-                host = '%s.%s' % (subdomain, self.site.domain)
-            else:
-                host = '%s' % self.site.domain
+            host = self.get_host_for_subdomain(subdomain)
             request = RequestFactory().get('/', HTTP_HOST=host)
             self.middleware.process_request(request)
             return request.subdomain
@@ -80,9 +94,9 @@ class SubdomainMiddlewareTestCase(TestCase):
         self.assertEqual(request.subdomain, 'www')
 
 
-class SubdomainURLRoutingTestCase(TestCase):
+class SubdomainURLRoutingTestCase(SubdomainTestMixin, TestCase):
     def setUp(self):
-        self.site = Site.objects.get_current()
+        super(SubdomainURLRoutingTestCase, self).setUp()
         self.middleware = SubdomainURLRoutingMiddleware()
 
     def test_url_routing(self):
@@ -90,10 +104,7 @@ class SubdomainURLRoutingTestCase(TestCase):
             """
             Returns the URLconf associated with this request.
             """
-            if subdomain is not None:
-                host = '%s.%s' % (subdomain, self.site.domain)
-            else:
-                host = '%s' % self.site.domain
+            host = self.get_host_for_subdomain(subdomain)
             request = RequestFactory().get('/', HTTP_HOST=host)
             self.middleware.process_request(request)
             return getattr(request, 'urlconf', None)
@@ -105,9 +116,17 @@ class SubdomainURLRoutingTestCase(TestCase):
         # Falls through to the actual ROOT_URLCONF.
         self.assertEqual(urlconf('subdomain'), None)
 
+    def test_appends_slash(self):
+        for subdomain in (None, 'api', 'wildcard'):
+            host = self.get_host_for_subdomain(subdomain)
+            response = self.client.get('/example', HTTP_HOST=host)
+            self.assertEqual(response.status_code, 301)
+            self.assertEqual(response['Location'], 'http://%s/example/' % host)
 
-class SubdomainURLReverseTestCase(TestCase):
+
+class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
     def setUp(self):
+        super(SubdomainURLReverseTestCase, self).setUp()
         self.site = Site.objects.get_current()
 
     def test_url_join(self):

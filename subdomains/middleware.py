@@ -1,3 +1,4 @@
+import logging
 import re
 import warnings
 
@@ -6,6 +7,9 @@ from django.contrib.sites.models import Site
 from django.utils.cache import patch_vary_headers
 
 from subdomains.exceptions import IncorrectSiteException
+
+
+logger = logging.getLogger(__name__)
 
 
 class SubdomainMiddleware(object):
@@ -59,12 +63,11 @@ class SubdomainURLRoutingMiddleware(SubdomainMiddleware):
         subdomain = getattr(request, 'subdomain', False)
 
         if subdomain is not False:
-            try:
-                request.urlconf = settings.SUBDOMAIN_URLCONFS[subdomain]
-            except KeyError:
-                # There was no match in the SUBDOMAIN_URLCONFS setting, so let
-                # the ROOT_URLCONF handle the URL routing for this request.
-                pass
+            urlconf = settings.SUBDOMAIN_URLCONFS.get(subdomain)
+            if urlconf is not None:
+                logger.debug("Using urlconf '%s' for subdomain: %s",
+                    urlconf, repr(subdomain))
+                request.urlconf = urlconf
 
         # Continue processing the request as normal.
         return None
