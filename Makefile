@@ -1,19 +1,16 @@
 install:
 	python setup.py install
 
-install-dev:
-	pip install -qr requirements.development.txt
-
-check:
-	pyflakes ./
-	pep8 --repeat --show-source ./
+lint:
+	pip install --use-mirrors flake8
+	flake8 ./subdomains
 
 test:
-	PYTHONPATH=".:${PYTHONPATH}" python tests/manage.py test --verbosity=2
+	python setup.py test
 
 publish:
 	git tag $$(python setup.py --version)
 	git push --tags
 	python setup.py sdist upload
 
-.PHONY: check install install-dev publish test
+.PHONY: install publish lint test

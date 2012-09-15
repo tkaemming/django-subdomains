@@ -1,6 +1,5 @@
-*.egg-info
-*.pyc
-*.pyo
+*.egg*
+*.py[co]
 build/
 dist/
 pip-log.txt

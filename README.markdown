@@ -90,4 +90,4 @@ without subdomains being resolved to "___.www.example.com".
 
 Before submitting a patch, please make sure to run the test suite, as well as
 pyflakes and PEP8 checks. These can be ran from the repository with the command
-`make check test`.
+`make lint test`.

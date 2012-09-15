@@ -17,6 +17,7 @@ except ImportError:
 
 
 install_requires = ['django']
+tests_require = install_requires
 
 setup(name='django-subdomains',
     version=version,
@@ -28,6 +29,8 @@ setup(name='django-subdomains',
     packages=('subdomains',),
     include_package_data=True,
     install_requires=install_requires,
+    tests_require=tests_require,
+    test_suite='subdomains.tests.run',
     zip_safe=False,
     license='MIT License',
 )

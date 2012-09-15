@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from example.views import view
+from subdomains.tests.views import view
 
 
 urlpatterns = patterns('',
