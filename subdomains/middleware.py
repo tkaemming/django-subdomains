@@ -13,14 +13,16 @@ logger = logging.getLogger(__name__)
 
 
 class SubdomainMiddleware(object):
+    def get_domain(self):
+        return Site.objects.get_current().domain
+
     def process_request(self, request):
         """
         Adds a `subdomain` attribute to the request object, which corresponds
         to the portion of the URL before the current Site object's `domain`
         attribute.
         """
-        site = Site.objects.get_current()
-        domain = site.domain
+        domain = self.get_domain()
 
         # To allow for case-insensitive comparison, force the site.domain and
         # the HTTP Host to lowercase.
@@ -39,8 +41,8 @@ class SubdomainMiddleware(object):
         if matches:
             request.subdomain = matches.group('subdomain')
         else:
-            error = 'The current host, %s, does not match the Site instance ' \
-                'specified by SITE_ID.' % request.get_host()
+            error = 'The current host %s does not belong to the current ' \
+                'domain.' % request.get_host()
 
             if getattr(settings, 'USE_SUBDOMAIN_EXCEPTION', False):
                 raise IncorrectSiteException(error)
