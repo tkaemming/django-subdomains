@@ -5,9 +5,9 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import NoReverseMatch
 from django.http import HttpRequest
 from django.test import TestCase
-from django.test.client import RequestFactory
 from django.template import Context, Template
 
+from subdomains.compat.requestfactory import RequestFactory
 from subdomains.compat.tests import override_settings
 from subdomains.middleware import (SubdomainMiddleware,
     SubdomainURLRoutingMiddleware)
