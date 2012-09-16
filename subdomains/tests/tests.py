@@ -193,12 +193,11 @@ class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
             'http://%s.%s/view/' % (subdomain, self.DOMAIN))
 
     def test_reverse_subdomain_mismatch(self):
-        with self.assertRaises(NoReverseMatch):
-            reverse('view')
+        self.assertRaises(NoReverseMatch, lambda: reverse('view'))
 
     def test_reverse_invalid_urlconf_argument(self):
-        with self.assertRaises(ValueError):
-            reverse('home', urlconf=self.get_path_to_urlconf('marketing'))
+        self.assertRaises(ValueError,
+            lambda: reverse('home', urlconf=self.get_path_to_urlconf('marketing')))
 
 
 class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
@@ -223,8 +222,7 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
         template = Template('{% load subdomainurls %}{% url view subdomain=subdomain %}')
 
         context = Context({'view': '__invalid__'})
-        with self.assertRaises(NoReverseMatch):
-            template.render(context)
+        self.assertRaises(NoReverseMatch, lambda: template.render(context))
 
     def test_implied_subdomain_from_request(self):
         template = Template('{% load subdomainurls %}{% url view %}')
