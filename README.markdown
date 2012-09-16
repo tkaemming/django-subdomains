@@ -1,5 +1,7 @@
 # django-subdomains
 
+[![Build Status](https://secure.travis-ci.org/tkaemming/django-subdomains.png)](http://travis-ci.org/tkaemming/django-subdomains)
+
 ## Installation
 
 This application is available via the
