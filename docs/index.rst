@@ -127,7 +127,7 @@ argument. The following are all valid invocations of the tag::
 If ``request`` is in the template context when rendering and no subdomain is
 provided, the URL will be attempt to be resolved by relative to the current
 subdomain. If no request is available, the URL will be resolved using the same
-rules as a call to :func:`subdomains.utils.reverse`` without a ``subdomain``
+rules as a call to :func:`subdomains.utils.reverse` without a ``subdomain``
 argument value. An easy way to ensure this functionality is available is to
 add :func:`django.core.context_processors.request` is in your
 ``settings.TEMPLATE_CONTEXT_PROCESSORS`` list.
