@@ -1,5 +1,6 @@
 *.egg*
 *.py[co]
+.tox/
 build/
 dist/
 pip-log.txt
