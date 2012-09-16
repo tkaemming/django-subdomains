@@ -3,19 +3,18 @@ import warnings
 
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import NoReverseMatch
-from django.http import HttpRequest
 from django.test import TestCase
 from django.template import Context, Template
 
 try:
     from django.test.client import RequestFactory
 except ImportError:
-    from subdomains.compat.requestfactory import RequestFactory
+    from subdomains.compat.requestfactory import RequestFactory  # noqa
 
 try:
     from django.test.utils import override_settings
 except ImportError:
-    from subdomains.compat.tests import override_settings
+    from subdomains.compat.tests import override_settings  # noqa
 
 from subdomains.middleware import (SubdomainMiddleware,
     SubdomainURLRoutingMiddleware)
@@ -205,13 +204,17 @@ class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
 
     def test_reverse_invalid_urlconf_argument(self):
         self.assertRaises(ValueError,
-            lambda: reverse('home', urlconf=self.get_path_to_urlconf('marketing')))
+            lambda: reverse('home',
+                urlconf=self.get_path_to_urlconf('marketing')))
 
 
 class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
+    def make_template(self, template):
+        return Template('{% load subdomainurls %}' + template)
+
     def test_without_subdomain(self):
         defaults = {'view': 'home'}
-        template = Template('{% load subdomainurls %}{% url view %}')
+        template = self.make_template('{% url view %}')
 
         context = Context(defaults)
         rendered = template.render(context).strip()
@@ -219,21 +222,22 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
 
     def test_with_subdomain(self):
         defaults = {'view': 'home'}
-        template = Template('{% load subdomainurls %}{% url view subdomain=subdomain %}')
+        template = self.make_template('{% url view subdomain=subdomain %}')
 
         for subdomain in ('www', 'api', 'wildcard'):
             context = Context(dict(defaults, subdomain=subdomain))
             rendered = template.render(context).strip()
-            self.assertEqual(rendered, 'http://%s.%s/' % (subdomain, self.DOMAIN))
+            self.assertEqual(rendered,
+                'http://%s.%s/' % (subdomain, self.DOMAIN))
 
     def test_no_reverse(self):
-        template = Template('{% load subdomainurls %}{% url view subdomain=subdomain %}')
+        template = self.make_template('{% url view subdomain=subdomain %}')
 
         context = Context({'view': '__invalid__'})
         self.assertRaises(NoReverseMatch, lambda: template.render(context))
 
     def test_implied_subdomain_from_request(self):
-        template = Template('{% load subdomainurls %}{% url view %}')
+        template = self.make_template('{% url view %}')
         defaults = {'view': 'home'}
 
         request = mock.Mock()
@@ -249,4 +253,5 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
 
             context = Context(dict(defaults, request=request))
             rendered = template.render(context).strip()
-            self.assertEqual(rendered, 'http://%s.%s/' % (subdomain, self.DOMAIN))
+            self.assertEqual(rendered,
+                'http://%s.%s/' % (subdomain, self.DOMAIN))

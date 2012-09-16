@@ -1,3 +1,4 @@
+# flake8: noqa
 from functools import wraps
 
 from django.conf import settings, UserSettingsHolder
@@ -26,6 +27,7 @@ class override_settings(object):
         if isinstance(test_func, type) and issubclass(test_func, TransactionTestCase):
             original_pre_setup = test_func._pre_setup
             original_post_teardown = test_func._post_teardown
+
             def _pre_setup(innerself):
                 self.enable()
                 original_pre_setup(innerself)
