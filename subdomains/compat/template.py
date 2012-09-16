@@ -1,4 +1,8 @@
 # flake8: noqa
+"""
+Backport of `django.template.Library.simple_tag` from Django 1.4, as well as
+it's dependencies.
+"""
 import re
 import functools
 from inspect import getargspec

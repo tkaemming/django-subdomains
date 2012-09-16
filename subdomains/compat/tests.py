@@ -1,4 +1,7 @@
 # flake8: noqa
+"""
+Backport of `django.test.utils.override_settings` from Django 1.3 and above.
+"""
 from functools import wraps
 
 from django.conf import settings, UserSettingsHolder

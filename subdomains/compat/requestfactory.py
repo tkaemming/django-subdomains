@@ -1,3 +1,6 @@
+"""
+Backport of `django.test.client.RequestFactory` from Django 1.3 and above.
+"""
 import urllib
 from cStringIO import StringIO
 from urlparse import urlparse

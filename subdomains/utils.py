@@ -6,35 +6,57 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse as simple_reverse
 
 
-def urljoin(domain, path=None, scheme=None):
-    if path is None:
-        path = ''
+def current_site_domain():
+    return Site.objects.get_current().domain
 
+get_domain = current_site_domain
+
+
+def urljoin(domain, path=None, scheme=None):
+    """
+    Joins a domain, path and scheme part together, returning a full URL.
+
+    :param domain: the domain, e.g. ``example.com``
+    :param path: the path part of the URL, e.g. ``/example/``
+    :param scheme: the scheme part of the URL, e.g. ``http``, defaulting to the
+        value of ``settings.DEFAULT_URL_SCHEME``
+    :returns: a full URL
+    """
     if scheme is None:
         scheme = getattr(settings, 'DEFAULT_URL_SCHEME', 'http')
 
-    return urlunparse((scheme, domain, path, None, None, None))
+    return urlunparse((scheme, domain, path or '', None, None, None))
 
 
-def reverse(viewname, subdomain=None, scheme=None, urlconf=None,
-        *args, **kwargs):
-    # We imply the urlconf from the `subdomain` argument -- providing the
-    # urlconf is a violation of this logic.
-    if urlconf is not None:
-        raise ValueError('`subdomains.utils.reverse` does not accept the '
-            '`urlconf` argument.')
+def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
+        current_app=None):
+    """
+    Reverses a URL from the given parameters, in a similar fashion to
+    :meth:`django.core.urlresolvers.reverse`.
 
-    site = Site.objects.get_current()
+    :param viewname: the name of URL
+    :param subdomain: the subdomain to use for URL reversing
+    :param scheme: the scheme to use when generating the full URL
+    :param args: positional arguments used for URL reversing
+    :param kwargs: named arguments used for URL reversing
+    :param current_app: hint for the currently executing application
+    """
     urlconf = settings.SUBDOMAIN_URLCONFS.get(subdomain)
-    if subdomain is not None:
-        domain = '%s.%s' % (subdomain, site.domain)
-    else:
-        domain = site.domain
 
-    path = simple_reverse(viewname, urlconf=urlconf, *args, **kwargs)
+    domain = get_domain()
+    if subdomain is not None:
+        domain = '%s.%s' % (subdomain, domain)
+
+    path = simple_reverse(viewname, urlconf=urlconf, args=args, kwargs=kwargs,
+        current_app=current_app)
     return urljoin(domain, path, scheme=scheme)
 
 
+#: :func:`reverse` bound to insecure (non-HTTPS) URLs scheme
 insecure_reverse = functools.partial(reverse, scheme='http')
+
+#: :func:`reverse` bound to secure (HTTPS) URLs scheme
 secure_reverse = functools.partial(reverse, scheme='https')
+
+#: :func:`reverse` bound to be relative to the current scheme
 relative_reverse = functools.partial(reverse, scheme='')

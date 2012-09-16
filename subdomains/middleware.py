@@ -1,86 +1,73 @@
+import operator
 import logging
 import re
-import warnings
 
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.utils.cache import patch_vary_headers
 
-from subdomains.exceptions import IncorrectSiteException
+from subdomains.utils import get_domain
 
 
 logger = logging.getLogger(__name__)
+lower = operator.methodcaller('lower')
+
+UNSET = object()
 
 
 class SubdomainMiddleware(object):
-    def get_domain(self):
-        return Site.objects.get_current().domain
+    def get_domain_for_request(self, request):
+        """
+        Returns the domain that will be used to identify the subdomain part
+        for this request.
+        """
+        return get_domain()
 
     def process_request(self, request):
         """
-        Adds a `subdomain` attribute to the request object, which corresponds
-        to the portion of the URL before the current Site object's `domain`
-        attribute.
+        Adds a ``subdomain`` attribute to the ``request`` parameter.
         """
-        domain = self.get_domain()
+        domain, host = map(lower,
+            (self.get_domain_for_request(request), request.get_host()))
 
-        # To allow for case-insensitive comparison, force the site.domain and
-        # the HTTP Host to lowercase.
-        domain, host = domain.lower(), request.get_host().lower()
-
-        REMOVE_WWW_FROM_DOMAIN = getattr(settings, 'REMOVE_WWW_FROM_DOMAIN',
-            False)
-        if REMOVE_WWW_FROM_DOMAIN and domain.startswith("www."):
-            domain = domain.replace("www.", "", 1)
+        prefix = 'www.'
+        if getattr(settings, 'REMOVE_WWW_FROM_DOMAIN', False) \
+                and domain.startswith(prefix):
+            domain = domain.replace(prefix, '', 1)
 
         pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(domain)
         matches = re.match(pattern, host)
 
-        request.subdomain = None
-
         if matches:
             request.subdomain = matches.group('subdomain')
         else:
-            error = 'The current host %s does not belong to the current ' \
-                'domain.' % request.get_host()
-
-            if getattr(settings, 'USE_SUBDOMAIN_EXCEPTION', False):
-                raise IncorrectSiteException(error)
-            else:
-                warnings.warn('%s The URLconf for this host will fall back to '
-                    'the ROOT_URLCONF.' % error, UserWarning)
-
-        # Continue processing the request as normal.
-        return None
+            request.subdomain = None
+            logger.warning('The host %s does not belong to the domain %s, '
+                'unable to identify the subdomain for this request',
+                request.get_host(), domain)
 
 
 class SubdomainURLRoutingMiddleware(SubdomainMiddleware):
     def process_request(self, request):
         """
-        Sets the current request's `urlconf` attribute to the URL conf
-        associated with the subdomain, if listed in `SUBDOMAIN_URLCONFS`.
+        Sets the current request's ``urlconf`` attribute to the urlconf
+        associated with the subdomain, if it is listed in
+        ``settings.SUBDOMAIN_URLCONFS``.
         """
         super(SubdomainURLRoutingMiddleware, self).process_request(request)
 
-        subdomain = getattr(request, 'subdomain', False)
+        subdomain = getattr(request, 'subdomain', UNSET)
 
-        if subdomain is not False:
+        if subdomain is not UNSET:
             urlconf = settings.SUBDOMAIN_URLCONFS.get(subdomain)
             if urlconf is not None:
-                logger.debug("Using urlconf '%s' for subdomain: %s",
-                    urlconf, repr(subdomain))
+                logger.debug("Using urlconf %s for subdomain: %s",
+                    repr(urlconf), repr(subdomain))
                 request.urlconf = urlconf
-
-        # Continue processing the request as normal.
-        return None
 
     def process_response(self, request, response):
         """
-        Forces the HTTP Vary header onto requests to avoid having responses
-        cached from incorrect urlconfs.
-
-        If you'd like to disable this for some reason, set `FORCE_VARY_ON_HOST`
-        in your Django settings file to `False`.
+        Forces the HTTP ``Vary`` header onto requests to avoid having responses
+        cached across subdomains.
         """
         if getattr(settings, 'FORCE_VARY_ON_HOST', True):
             patch_vary_headers(response, ('Host',))

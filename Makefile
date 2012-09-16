@@ -5,7 +5,10 @@ lint:
 	pip install --use-mirrors flake8
 	flake8 ./subdomains
 
-test:
+clean:
+	find . -name *.pyc -delete
+
+test: clean
 	python setup.py test
 
 publish:

@@ -203,7 +203,7 @@ class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
         self.assertRaises(NoReverseMatch, lambda: reverse('view'))
 
     def test_reverse_invalid_urlconf_argument(self):
-        self.assertRaises(ValueError,
+        self.assertRaises(TypeError,
             lambda: reverse('home',
                 urlconf=self.get_path_to_urlconf('marketing')))
 
