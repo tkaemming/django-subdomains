@@ -7,8 +7,16 @@ from django.http import HttpRequest
 from django.test import TestCase
 from django.template import Context, Template
 
-from subdomains.compat.requestfactory import RequestFactory
-from subdomains.compat.tests import override_settings
+try:
+    from django.test.client import RequestFactory
+except ImportError:
+    from subdomains.compat.requestfactory import RequestFactory
+
+try:
+    from django.test.utils import override_settings
+except ImportError:
+    from subdomains.compat.tests import override_settings
+
 from subdomains.middleware import (SubdomainMiddleware,
     SubdomainURLRoutingMiddleware)
 from subdomains.utils import reverse, urljoin
