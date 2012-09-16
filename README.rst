@@ -80,16 +80,6 @@ associate requests with user accounts based on subdomain, etc.
 Settings
 --------
 
-``USE_SUBDOMAIN_EXCEPTION``
-    Default: `False`
-
-    If ``USE_SUBDOMAIN_EXCEPTION`` is set to ``True``, an
-    ``subdomains.exceptions.IncorrectSiteException`` will be raised if the domain
-    name does not match the ``django.contrib.sites.models.Site`` instance specified
-    by your ``SITE_ID``. This setting defaults to ``False``, and will instead
-    throw a warning that will not prevent your application from continuing if
-    the ``Site`` is incorrect.
-
 ``REMOVE_WWW_FROM_DOMAIN``
     Default: `False`
 
