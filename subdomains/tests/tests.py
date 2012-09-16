@@ -1,15 +1,14 @@
-import contextlib
-import mock
 import warnings
 
-from django.conf import settings
+from django.contrib.sites.models import Site
+from django.core.urlresolvers import NoReverseMatch
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
-from django.contrib.sites.models import Site
 
 from subdomains.middleware import (SubdomainMiddleware,
     SubdomainURLRoutingMiddleware)
+from subdomains.utils import reverse, urljoin
 
 
 def prefix_values(dictionary, prefix):
@@ -154,3 +153,44 @@ class SubdomainURLRoutingTestCase(SubdomainTestMixin, TestCase):
             response = self.client.get('/example', HTTP_HOST=host)
             self.assertEqual(response.status_code, 301)
             self.assertEqual(response['Location'], 'http://%s/example/' % host)
+
+
+class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
+    def test_url_join(self):
+        self.assertEqual(urljoin(self.DOMAIN), 'http://%s' % self.DOMAIN)
+        self.assertEqual(urljoin(self.DOMAIN, scheme='https'),
+            'https://%s' % self.DOMAIN)
+
+        with self.settings(DEFAULT_URL_SCHEME='https'):
+            self.assertEqual(urljoin(self.DOMAIN), 'https://%s' % self.DOMAIN)
+
+        self.assertEqual(urljoin(self.DOMAIN, path='/example/'),
+            'http://%s/example/' % self.DOMAIN)
+
+    def test_implicit_reverse(self):
+        # Uses settings.SUBDOMAIN_URLCONFS[None], if it exists.
+        # Otherwise would perform the same behavior as `test_wildcard_reverse`.
+        self.assertEqual(reverse('home'), 'http://%s/' % self.DOMAIN)
+
+    def test_explicit_reverse(self):
+        # Uses explicitly provided settings.SUBDOMAIN_URLCONF[subdomain]
+        self.assertEqual(reverse('home', subdomain='api'),
+            'http://api.%s/' % self.DOMAIN)
+        self.assertEqual(reverse('view', subdomain='api'),
+            'http://api.%s/view/' % self.DOMAIN)
+
+    def test_wildcard_reverse(self):
+        # Falls through to settings.ROOT_URLCONF
+        subdomain = 'wildcard'
+        self.assertEqual(reverse('home', subdomain),
+            'http://%s.%s/' % (subdomain, self.DOMAIN))
+        self.assertEqual(reverse('view', subdomain),
+            'http://%s.%s/view/' % (subdomain, self.DOMAIN))
+
+    def test_reverse_subdomain_mismatch(self):
+        with self.assertRaises(NoReverseMatch):
+            reverse('view')
+
+    def test_reverse_invalid_urlconf_argument(self):
+        with self.assertRaises(ValueError):
+            reverse('home', urlconf=self.get_path_to_urlconf('marketing'))
