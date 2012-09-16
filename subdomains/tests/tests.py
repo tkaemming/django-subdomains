@@ -29,6 +29,7 @@ class SubdomainTestMixin(object):
         self.site.save()
 
     @override_settings(
+        DEFAULT_URL_SCHEME='http',
         ROOT_URLCONF='%s.application' % URL_MODULE_PATH,
         SUBDOMAIN_URLCONFS=prefix_values({
             None: 'marketing',
