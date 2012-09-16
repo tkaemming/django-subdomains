@@ -5,6 +5,7 @@ from django.core.urlresolvers import NoReverseMatch
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
+from django.template import Context, Template
 
 from subdomains.middleware import (SubdomainMiddleware,
     SubdomainURLRoutingMiddleware)
@@ -26,7 +27,8 @@ class SubdomainTestMixin(object):
         self.site.domain = self.DOMAIN
         self.site.save()
 
-    @override_settings(ROOT_URLCONF='%s.application' % URL_MODULE_PATH,
+    @override_settings(
+        ROOT_URLCONF='%s.application' % URL_MODULE_PATH,
         SUBDOMAIN_URLCONFS=prefix_values({
             None: 'marketing',
             'api': 'api',
@@ -194,3 +196,24 @@ class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
     def test_reverse_invalid_urlconf_argument(self):
         with self.assertRaises(ValueError):
             reverse('home', urlconf=self.get_path_to_urlconf('marketing'))
+
+
+class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
+    template = Template('{% load subdomainurls %}{% url view subdomain=subdomain %}')
+
+    def test_simple(self):
+        defaults = {'view': 'home'}
+
+        context = Context(defaults)
+        rendered = self.template.render(context).strip()
+        self.assertEqual(rendered, 'http://%s/' % self.DOMAIN)
+
+        for subdomain in ('www', 'api', 'wildcard'):
+            context = Context(dict(defaults, subdomain=subdomain))
+            rendered = self.template.render(context).strip()
+            self.assertEqual(rendered, 'http://%s.%s/' % (subdomain, self.DOMAIN))
+
+    def test_no_reverse(self):
+        context = Context({'view': '__invalid__'})
+        with self.assertRaises(NoReverseMatch):
+            self.template.render(context)
