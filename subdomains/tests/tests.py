@@ -3,11 +3,12 @@ import warnings
 
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import NoReverseMatch
+from django.http import HttpRequest
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.test.utils import override_settings
 from django.template import Context, Template
 
+from subdomains.compat.tests import override_settings
 from subdomains.middleware import (SubdomainMiddleware,
     SubdomainURLRoutingMiddleware)
 from subdomains.utils import reverse, urljoin
@@ -94,7 +95,7 @@ class SubdomainMiddlewareTestCase(SubdomainTestMixin, TestCase):
         self.site.domain = 'www.%s' % self.DOMAIN
         self.site.save()
 
-        with self.settings(REMOVE_WWW_FROM_DOMAIN=False):
+        with override_settings(REMOVE_WWW_FROM_DOMAIN=False):
             self.assertEqual(host('www.%s' % self.DOMAIN), None)
 
             # Squelch the subdomain warning for cleaner test output, since we
@@ -111,7 +112,7 @@ class SubdomainMiddlewareTestCase(SubdomainTestMixin, TestCase):
             self.assertEqual(host('www.subdomain.www.%s' % self.DOMAIN),
                 'www.subdomain')
 
-        with self.settings(REMOVE_WWW_FROM_DOMAIN=True):
+        with override_settings(REMOVE_WWW_FROM_DOMAIN=True):
             self.assertEqual(host('www.%s' % self.DOMAIN), 'www')
             self.assertEqual(host('subdomain.%s' % self.DOMAIN), 'subdomain')
             self.assertEqual(host('subdomain.www.%s' % self.DOMAIN),
@@ -165,7 +166,7 @@ class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
         self.assertEqual(urljoin(self.DOMAIN, scheme='https'),
             'https://%s' % self.DOMAIN)
 
-        with self.settings(DEFAULT_URL_SCHEME='https'):
+        with override_settings(DEFAULT_URL_SCHEME='https'):
             self.assertEqual(urljoin(self.DOMAIN), 'https://%s' % self.DOMAIN)
 
         self.assertEqual(urljoin(self.DOMAIN, path='/example/'),
