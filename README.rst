@@ -10,7 +10,7 @@ Installation
 ------------
 
 This application is available via the
-`Python Package Index <http://pypi.python.org/pypi/django-subdomains>` and can
+`Python Package Index <http://pypi.python.org/pypi/django-subdomains>`_ and can
 be installed with any Python package manager, such as ``pip`` or ``easy_install``
 by running::
 
@@ -82,6 +82,7 @@ Settings
 
 ``USE_SUBDOMAIN_EXCEPTION``
     Default: `False`
+
     If ``USE_SUBDOMAIN_EXCEPTION`` is set to ``True``, an
     ``subdomains.exceptions.IncorrectSiteException`` will be raised if the domain
     name does not match the ``django.contrib.sites.models.Site`` instance specified
@@ -91,6 +92,7 @@ Settings
 
 ``REMOVE_WWW_FROM_DOMAIN``
     Default: `False`
+
     If ``REMOVE_WWW_FROM_DOMAIN`` is set to ``True``, the ``domain`` attribute
     of the ``Site`` model will have the ``www.`` portion stripped before
     processing. This allows for ``www.example.com`` to be used as the
