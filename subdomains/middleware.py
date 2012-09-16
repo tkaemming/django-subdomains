@@ -15,6 +15,9 @@ UNSET = object()
 
 
 class SubdomainMiddleware(object):
+    """
+    A middleware class that adds a ``subdomain`` attribute to the current request.
+    """
     def get_domain_for_request(self, request):
         """
         Returns the domain that will be used to identify the subdomain part
@@ -47,6 +50,9 @@ class SubdomainMiddleware(object):
 
 
 class SubdomainURLRoutingMiddleware(SubdomainMiddleware):
+    """
+    A middleware class that allows for subdomain-based URL routing.
+    """
     def process_request(self, request):
         """
         Sets the current request's ``urlconf`` attribute to the urlconf
