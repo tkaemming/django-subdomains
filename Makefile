@@ -16,4 +16,4 @@ publish:
 	git push --tags
 	python setup.py sdist upload
 
-.PHONY: install publish lint test
+.PHONY: clean install publish lint test
