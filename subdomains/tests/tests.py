@@ -1,3 +1,4 @@
+import mock
 import warnings
 
 from django.contrib.sites.models import Site
@@ -199,21 +200,45 @@ class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
 
 
 class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
-    template = Template('{% load subdomainurls %}{% url view subdomain=subdomain %}')
-
-    def test_simple(self):
+    def test_without_subdomain(self):
         defaults = {'view': 'home'}
+        template = Template('{% load subdomainurls %}{% url view %}')
 
         context = Context(defaults)
-        rendered = self.template.render(context).strip()
+        rendered = template.render(context).strip()
         self.assertEqual(rendered, 'http://%s/' % self.DOMAIN)
+
+    def test_with_subdomain(self):
+        defaults = {'view': 'home'}
+        template = Template('{% load subdomainurls %}{% url view subdomain=subdomain %}')
 
         for subdomain in ('www', 'api', 'wildcard'):
             context = Context(dict(defaults, subdomain=subdomain))
-            rendered = self.template.render(context).strip()
+            rendered = template.render(context).strip()
             self.assertEqual(rendered, 'http://%s.%s/' % (subdomain, self.DOMAIN))
 
     def test_no_reverse(self):
+        template = Template('{% load subdomainurls %}{% url view subdomain=subdomain %}')
+
         context = Context({'view': '__invalid__'})
         with self.assertRaises(NoReverseMatch):
-            self.template.render(context)
+            template.render(context)
+
+    def test_implied_subdomain_from_request(self):
+        template = Template('{% load subdomainurls %}{% url view %}')
+        defaults = {'view': 'home'}
+
+        request = mock.Mock()
+        request.subdomain = None
+
+        context = Context(dict(defaults, request=request))
+        rendered = template.render(context).strip()
+        self.assertEqual(rendered, 'http://%s/' % self.DOMAIN)
+
+        for subdomain in ('www', 'api', 'wildcard'):
+            request = mock.Mock()
+            request.subdomain = subdomain
+
+            context = Context(dict(defaults, request=request))
+            rendered = template.render(context).strip()
+            self.assertEqual(rendered, 'http://%s.%s/' % (subdomain, self.DOMAIN))

@@ -17,7 +17,7 @@ except ImportError:
 
 
 install_requires = ['django']
-tests_require = install_requires
+tests_require = install_requires + ['mock']
 
 setup(name='django-subdomains',
     version=version,

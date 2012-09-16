@@ -25,7 +25,7 @@ def reverse(viewname, subdomain=None, scheme=None, urlconf=None,
 
     site = Site.objects.get_current()
     urlconf = settings.SUBDOMAIN_URLCONFS.get(subdomain)
-    if subdomain:
+    if subdomain is not None:
         domain = '%s.%s' % (subdomain, site.domain)
     else:
         domain = site.domain
