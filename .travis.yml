@@ -8,3 +8,4 @@ install:
   - pip install --use-mirrors -q Django==$DJANGO
 script:
   - make test
+
