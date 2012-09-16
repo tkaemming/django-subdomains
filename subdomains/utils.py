@@ -1,3 +1,4 @@
+import functools
 from urlparse import urlunparse
 
 from django.conf import settings
@@ -32,3 +33,8 @@ def reverse(viewname, subdomain=None, scheme=None, urlconf=None,
 
     path = simple_reverse(viewname, urlconf=urlconf, *args, **kwargs)
     return urljoin(domain, path, scheme=scheme)
+
+
+insecure_reverse = functools.partial(reverse, scheme='http')
+secure_reverse = functools.partial(reverse, scheme='https')
+relative_reverse = functools.partial(reverse, scheme='')
