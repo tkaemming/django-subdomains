@@ -2,7 +2,7 @@
 import os
 import sys
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def get_version():
@@ -26,7 +26,7 @@ setup(name='django-subdomains',
     author_email='ted@kaemming.com',
     description="Subdomain tools for the Django framework, including "
         "subdomain-based URL routing.",
-    packages=('subdomains',),
+    packages=find_packages(),
     include_package_data=True,
     install_requires=install_requires,
     tests_require=tests_require,
