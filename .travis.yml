@@ -8,6 +8,6 @@ env:
   - DJANGO='Django>=1.4,<1.5'
   - DJANGO='https://github.com/django/django/zipball/master'
 install:
-  - pip install --use-mirrors -q $DJANGO
+  - pip install --use-mirrors $DJANGO
 script:
   - make test
