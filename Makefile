@@ -11,9 +11,13 @@ clean:
 test: clean
 	python setup.py test
 
-publish:
+test-matrix: clean
+	pip install --use-mirrors tox
+	tox
+
+publish: lint test-matrix
 	git tag $$(python setup.py --version)
 	git push --tags
 	python setup.py sdist upload
 
-.PHONY: clean install publish lint test
+.PHONY: clean install publish lint test test-matrix
