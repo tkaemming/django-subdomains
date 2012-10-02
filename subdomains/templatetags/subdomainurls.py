@@ -24,6 +24,13 @@ def url(context, view, subdomain=UNSET, *args, **kwargs):
         {% load subdomainurls %}
         {% url 'view-name' subdomain='subdomain' %}
 
+    .. note:: This tag uses the variable URL syntax introduced in Django
+       1.3 as ``{% load url from future %}`` and was made the standard in Django
+       1.5. If you are upgrading a legacy application from one of the previous
+       template tag formats, make sure that you quote your constant URL names
+       to avoid :exc:`~django.core.urlresolver.NoReverseMatch` errors during
+       template rendering.
+
     """
     if subdomain is UNSET:
         request = context.get('request')

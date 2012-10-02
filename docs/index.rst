@@ -132,6 +132,10 @@ argument value. An easy way to ensure this functionality is available is to
 add :func:`django.core.context_processors.request` is in your
 ``settings.TEMPLATE_CONTEXT_PROCESSORS`` list.
 
+.. note:: For implementation simplicitly, this template tag only supports the Django 1.5
+   ``{% url %}`` syntax with variable URL names. For more information, please see
+   the reference documentation for :func:`~subdomains.templatetags.subdomainurls.url`.
+
 API Reference
 -------------
 
