@@ -1,5 +1,7 @@
+import os
 import mock
 import warnings
+from contextlib import contextmanager
 
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import NoReverseMatch
@@ -24,6 +26,11 @@ from subdomains.utils import reverse, urljoin
 def prefix_values(dictionary, prefix):
     return dict((key, '%s.%s' % (prefix, value))
         for key, value in dictionary.iteritems())
+
+
+def secure(request):
+    request.is_secure = lambda: True
+    return request
 
 
 class SubdomainTestMixin(object):
@@ -169,14 +176,10 @@ class SubdomainURLRoutingTestCase(SubdomainTestMixin, TestCase):
 
 class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
     def test_url_join(self):
-        self.assertEqual(urljoin(self.DOMAIN), 'http://%s' % self.DOMAIN)
+        self.assertEqual(urljoin(self.DOMAIN, scheme='http'), 'http://%s' % self.DOMAIN)
         self.assertEqual(urljoin(self.DOMAIN, scheme='https'),
             'https://%s' % self.DOMAIN)
-
-        with override_settings(DEFAULT_URL_SCHEME='https'):
-            self.assertEqual(urljoin(self.DOMAIN), 'https://%s' % self.DOMAIN)
-
-        self.assertEqual(urljoin(self.DOMAIN, path='/example/'),
+        self.assertEqual(urljoin(self.DOMAIN, scheme='http', path='/example/'),
             'http://%s/example/' % self.DOMAIN)
 
     def test_implicit_reverse(self):
@@ -206,6 +209,45 @@ class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
         self.assertRaises(TypeError,
             lambda: reverse('home',
                 urlconf=self.get_path_to_urlconf('marketing')))
+
+    def test_reverse_with_request_same_domain(self):
+        request = RequestFactory().get('/', HTTP_HOST=self.DOMAIN)
+        self.assertEqual(reverse('home', request=request), '/')
+
+    def test_reverse_with_request_different_subdomain(self):
+        request = RequestFactory().get('/', HTTP_HOST='wildcard.%s' % self.DOMAIN)
+        self.assertEqual(reverse('home', request=request), 'http://%s/' % self.DOMAIN)
+
+    def test_reverse_with_request_same_subdomain(self):
+        subdomain = 'wildcard'
+        request = RequestFactory().get('/', HTTP_HOST='%s.%s' % (subdomain, self.DOMAIN))
+        self.assertEqual(reverse('home', request=request, subdomain=subdomain), '/')
+
+    def test_reverse_with_request_protocol_relative(self):
+        request = RequestFactory().get('/', HTTP_HOST=self.DOMAIN)
+        self.assertEqual(reverse('home', scheme='', request=request), '/')
+
+    def test_reverse_with_request_secure_protocol_relative(self):
+        request = RequestFactory().get('/', HTTP_HOST=self.DOMAIN)
+        self.assertEqual(reverse('home', scheme='', request=request), '/')
+
+    def test_reverse_with_request_secure_protocol_relative_secure(self):
+        request = secure(RequestFactory().get('/', HTTP_HOST=self.DOMAIN))
+        self.assertEqual(reverse('home', scheme='', request=request), '/')
+
+    def test_reverse_with_request_protocol_mismatch(self):
+        request = RequestFactory().get('/', HTTP_HOST=self.DOMAIN)
+        self.assertEqual(reverse('home', scheme='https', request=request),
+            'https://%s/' % self.DOMAIN)
+
+    def test_reverse_with_request_protocol_secure(self):
+        request = secure(RequestFactory().get('/', HTTP_HOST=self.DOMAIN))
+        self.assertEqual(reverse('home', request=request), 'http://%s/' % self.DOMAIN)
+
+    def test_reverse_with_request_protocol_mismatch(self):
+        request = secure(RequestFactory().get('/', HTTP_HOST=self.DOMAIN))
+        self.assertEqual(reverse('home', scheme='http', request=request),
+            'http://%s/' % self.DOMAIN)
 
 
 class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):

@@ -18,30 +18,29 @@ def urljoin(domain, path=None, scheme=None):
 
     :param domain: the domain, e.g. ``example.com``
     :param path: the path part of the URL, e.g. ``/example/``
-    :param scheme: the scheme part of the URL, e.g. ``http``, defaulting to the
-        value of ``settings.DEFAULT_URL_SCHEME``
+    :param scheme: the scheme part of the URL
     :returns: a full URL
     """
-    if scheme is None:
-        scheme = getattr(settings, 'DEFAULT_URL_SCHEME', 'http')
-
     return urlunparse((scheme, domain, path or '', None, None, None))
 
 
 def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
-        current_app=None):
+        current_app=None, request=None):
     """
     Reverses a URL from the given parameters, in a similar fashion to
     :meth:`django.core.urlresolvers.reverse`.
 
     :param viewname: the name of URL
     :param subdomain: the subdomain to use for URL reversing
-    :param scheme: the scheme to use when generating the full URL
+    :param scheme: the scheme to use when generating the full URL, defaults to
+        the value of ``settings.DEFAULT_URL_SCHEME``
     :param args: positional arguments used for URL reversing
     :param kwargs: named arguments used for URL reversing
     :param current_app: hint for the currently executing application
     """
     urlconf = settings.SUBDOMAIN_URLCONFS.get(subdomain)
+    if scheme is None:
+        scheme = getattr(settings, 'DEFAULT_URL_SCHEME', 'http')
 
     domain = get_domain()
     if subdomain is not None:
@@ -49,6 +48,13 @@ def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
 
     path = simple_reverse(viewname, urlconf=urlconf, args=args, kwargs=kwargs,
         current_app=current_app)
+
+    if request and domain == request.get_host():
+        if scheme is '' or (
+            (scheme is 'http' and not request.is_secure()) or # http -> http
+            (scheme is 'https' and request.is_secure())):  # https -> https
+            return path
+
     return urljoin(domain, path, scheme=scheme)
 
 
