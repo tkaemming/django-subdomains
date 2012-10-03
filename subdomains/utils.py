@@ -51,8 +51,8 @@ def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
 
     if request and domain == request.get_host():
         if scheme is '' or (
-            (scheme is 'http' and not request.is_secure()) or # http -> http
-            (scheme is 'https' and request.is_secure())):  # https -> https
+            (scheme is 'http' and not request.is_secure()) or
+            (scheme is 'https' and request.is_secure())):
             return path
 
     return urljoin(domain, path, scheme=scheme)

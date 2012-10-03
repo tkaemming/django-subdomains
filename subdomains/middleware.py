@@ -16,7 +16,7 @@ UNSET = object()
 
 class SubdomainMiddleware(object):
     """
-    A middleware class that adds a ``subdomain`` attribute to the current request.
+    A middleware class that adds a ``subdomain`` attribute to the request.
     """
     def get_domain_for_request(self, request):
         """
