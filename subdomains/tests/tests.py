@@ -227,24 +227,24 @@ class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
         request = RequestFactory().get('/', HTTP_HOST=self.DOMAIN)
         self.assertEqual(reverse('home', scheme='', request=request), '/')
 
-    def test_reverse_with_request_secure_protocol_relative(self):
+    def test_reverse_with_request_protocol_relative(self):
         request = RequestFactory().get('/', HTTP_HOST=self.DOMAIN)
         self.assertEqual(reverse('home', scheme='', request=request), '/')
 
-    def test_reverse_with_request_secure_protocol_relative_secure(self):
+    def test_reverse_with_request_secure_protocol_relative(self):
         request = secure(RequestFactory().get('/', HTTP_HOST=self.DOMAIN))
         self.assertEqual(reverse('home', scheme='', request=request), '/')
 
-    def test_reverse_with_request_protocol_mismatch(self):
+    def test_reverse_with_request_protocol_unsecure_to_secure(self):
         request = RequestFactory().get('/', HTTP_HOST=self.DOMAIN)
         self.assertEqual(reverse('home', scheme='https', request=request),
             'https://%s/' % self.DOMAIN)
 
-    def test_reverse_with_request_protocol_secure(self):
+    def test_reverse_with_request_protocol_secure_to_default(self):
         request = secure(RequestFactory().get('/', HTTP_HOST=self.DOMAIN))
         self.assertEqual(reverse('home', request=request), 'http://%s/' % self.DOMAIN)
 
-    def test_reverse_with_request_protocol_mismatch(self):
+    def test_reverse_with_request_protocol_secure_to_unsecure(self):
         request = secure(RequestFactory().get('/', HTTP_HOST=self.DOMAIN))
         self.assertEqual(reverse('home', scheme='http', request=request),
             'http://%s/' % self.DOMAIN)
