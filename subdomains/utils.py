@@ -41,7 +41,7 @@ def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
     :param kwargs: named arguments used for URL reversing
     :param current_app: hint for the currently executing application
     """
-    urlconf = settings.SUBDOMAIN_URLCONFS.get(subdomain)
+    urlconf = settings.SUBDOMAIN_URLCONFS.get(subdomain, settings.ROOT_URLCONF)
 
     domain = get_domain()
     if subdomain is not None:
