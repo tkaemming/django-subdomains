@@ -2,7 +2,7 @@ import mock
 import warnings
 
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import NoReverseMatch
+from django.core.urlresolvers import NoReverseMatch, set_urlconf
 from django.test import TestCase
 from django.template import Context, Template
 
@@ -206,6 +206,18 @@ class SubdomainURLReverseTestCase(SubdomainTestMixin, TestCase):
         self.assertRaises(TypeError,
             lambda: reverse('home',
                 urlconf=self.get_path_to_urlconf('marketing')))
+
+    def test_using_not_default_urlconf(self):
+        # Ensure that changing the currently active URLconf to something other
+        # than the default still resolves wildcard subdomains correctly.
+        set_urlconf(self.get_path_to_urlconf('api'))
+
+        subdomain = 'wildcard'
+
+        # This will raise NoReverseMatch if we're using the wrong URLconf for
+        # the provided subdomain.
+        self.assertEqual(reverse('application', subdomain=subdomain),
+            'http://%s.%s/application/' % (subdomain, self.DOMAIN))
 
 
 class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
