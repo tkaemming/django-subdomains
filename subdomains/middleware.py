@@ -32,11 +32,6 @@ class SubdomainMiddleware(object):
         domain, host = map(lower,
             (self.get_domain_for_request(request), request.get_host()))
 
-        prefix = 'www.'
-        if getattr(settings, 'REMOVE_WWW_FROM_DOMAIN', False) \
-                and domain.startswith(prefix):
-            domain = domain.replace(prefix, '', 1)
-
         pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(domain)
         matches = re.match(pattern, host)
 
