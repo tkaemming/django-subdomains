@@ -3,6 +3,8 @@ from urlparse import urlunparse
 
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.utils.importlib import import_module
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse as simple_reverse
 
 
@@ -16,7 +18,31 @@ def current_site_domain():
 
     return domain
 
-get_domain = current_site_domain
+
+def get_domain():
+    global get_domain
+
+    fn_path = getattr(settings, 'SUBDOMAIN_GET_DOMAIN')
+
+    if fn_path is None:
+        get_domain = current_site_domain
+
+    else:
+        module_name, fn_name = fn_path.rsplit('.', 1)
+
+        try:
+            module = import_module(module_name)
+            fn = getattr(module, fn_name)
+            assert callable(fn)
+
+        except (ImportError, AttributeError, AssertionError):
+            raise ImproperlyConfigured('SUBDOMAIN_GET_DOMAIN doesn\'t exist or'
+                                       ' isn\'t a callable.')
+
+        else:
+            get_domain = fn
+
+    return get_domain()
 
 
 def urljoin(domain, path=None, scheme=None):
