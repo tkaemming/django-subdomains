@@ -32,7 +32,7 @@ To set up subdomain URL routing and reversing in a Django project:
 1. Add :class:`subdomains.middleware.SubdomainURLRoutingMiddleware` to your
    ``MIDDLEWARE_CLASSES`` in your Django settings file. If you are using
    :class:`django.middleware.common.CommonMiddleware`, the subdomain middleware
-   should follow :class:`~django.middleware.common.CommonMiddleware`.
+   should come before :class:`~django.middleware.common.CommonMiddleware`.
 2. Configure your ``SUBDOMAIN_URLCONFS`` dictionary in your Django settings file.
 3. Ensure that you've set up your ``SITE_ID`` in your Django settings file,
    and that the ``Site.domain`` attribute for that site corresponds to the
