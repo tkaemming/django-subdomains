@@ -37,6 +37,7 @@ To set up subdomain URL routing and reversing in a Django project:
 3. Ensure that you've set up your ``SITE_ID`` in your Django settings file,
    and that the ``Site.domain`` attribute for that site corresponds to the
    domain name where users will be accessing your site at.
+4. If you want to use the template tag, add 'subdomains' to your INSTALLED_APPS.
 
 Example Configuration
 ~~~~~~~~~~~~~~~~~~~~~
