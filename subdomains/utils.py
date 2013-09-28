@@ -1,4 +1,6 @@
 import functools
+import re
+
 from urlparse import urlunparse
 
 from django.conf import settings
