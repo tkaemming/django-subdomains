@@ -3,7 +3,10 @@ Backport of `django.test.client.RequestFactory` from Django 1.3 and above.
 """
 import urllib
 from cStringIO import StringIO
-from urlparse import urlparse
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIRequest
