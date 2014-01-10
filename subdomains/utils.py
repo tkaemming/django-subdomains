@@ -1,5 +1,8 @@
 import functools
-from urlparse import urlunparse
+try:
+    from urlparse import urlunparse
+except ImportError:
+    from urllib.parse import urlunparse
 
 from django.conf import settings
 from django.contrib.sites.models import Site
