@@ -5,13 +5,15 @@ except ImportError:
     from urllib.parse import urlunparse
 
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse as simple_reverse
 
 
+def current_domain():
+    from django.contrib.sites.models import Site
+    return Site.objects.get_current().domain
+    
 def current_site_domain():
-    domain = Site.objects.get_current().domain
-
+    domain = getattr(settings, 'SUBDOMAINS_DOMAIN', current_domain)()
     prefix = 'www.'
     if getattr(settings, 'REMOVE_WWW_FROM_DOMAIN', False) \
             and domain.startswith(prefix):
