@@ -1,4 +1,5 @@
 import functools
+import threading
 try:
     from urlparse import urlunparse
 except ImportError:
@@ -9,6 +10,7 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse as simple_reverse
 from django.core.urlresolvers import NoReverseMatch
 
+subdomain_globals = threading.local()
 UNSET = object()
 
 
@@ -22,7 +24,13 @@ def current_site_domain():
 
     return domain
 
-get_domain = current_site_domain
+
+def get_domain():
+    domain = getattr(subdomain_globals, 'domain', None)
+    if not domain:
+        return current_site_domain()
+    else:
+        return domain
 
 
 def urljoin(domain, path=None, scheme=None):
