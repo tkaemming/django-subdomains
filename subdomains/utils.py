@@ -1,4 +1,5 @@
 import functools
+import threading
 try:
     from urlparse import urlunparse
 except ImportError:
@@ -7,6 +8,10 @@ except ImportError:
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse as simple_reverse
+from django.core.urlresolvers import NoReverseMatch
+
+subdomain_globals = threading.local()
+UNSET = object()
 
 
 def current_site_domain():
@@ -19,7 +24,13 @@ def current_site_domain():
 
     return domain
 
-get_domain = current_site_domain
+
+def get_domain():
+    domain = getattr(subdomain_globals, 'domain', None)
+    if not domain:
+        return current_site_domain()
+    else:
+        return domain
 
 
 def urljoin(domain, path=None, scheme=None):
@@ -38,7 +49,7 @@ def urljoin(domain, path=None, scheme=None):
     return urlunparse((scheme, domain, path or '', None, None, None))
 
 
-def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
+def reverse(viewname, subdomain=UNSET, scheme=None, args=None, kwargs=None,
         current_app=None):
     """
     Reverses a URL from the given parameters, in a similar fashion to
@@ -51,14 +62,29 @@ def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
     :param kwargs: named arguments used for URL reversing
     :param current_app: hint for the currently executing application
     """
-    urlconf = settings.SUBDOMAIN_URLCONFS.get(subdomain, settings.ROOT_URLCONF)
+
+    if subdomain is not UNSET:
+        urlconf = settings.SUBDOMAIN_URLCONFS.get(subdomain, settings.ROOT_URLCONF)
+        path = simple_reverse(viewname, urlconf=urlconf, args=args, kwargs=kwargs,
+                              current_app=current_app)
+    else:
+        path = None
+        for subdomain, urlconf in settings.SUBDOMAIN_URLCONFS.items():
+            try:
+                path = simple_reverse(viewname, urlconf=urlconf, args=args, kwargs=kwargs,
+                                      current_app=current_app)
+            except NoReverseMatch:
+                path = None
+            else:
+                break
+        if not path:
+            raise NoReverseMatch("Reverse for '%s' with arguments '%s' and keyword "
+                                 "arguments '%s' not found." % (viewname, args, kwargs))
 
     domain = get_domain()
     if subdomain is not None:
         domain = '%s.%s' % (subdomain, domain)
 
-    path = simple_reverse(viewname, urlconf=urlconf, args=args, kwargs=kwargs,
-        current_app=current_app)
     return urljoin(domain, path, scheme=scheme)
 
 
