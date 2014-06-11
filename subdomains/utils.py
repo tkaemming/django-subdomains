@@ -69,7 +69,7 @@ def reverse(viewname, subdomain=UNSET, scheme=None, args=None, kwargs=None,
                               current_app=current_app)
     else:
         path = None
-        for subdomain, urlconf in settings.SUBDOMAIN_URLCONFS.iteritems():
+        for subdomain, urlconf in settings.SUBDOMAIN_URLCONFS.items():
             try:
                 path = simple_reverse(viewname, urlconf=urlconf, args=args, kwargs=kwargs,
                                       current_app=current_app)
