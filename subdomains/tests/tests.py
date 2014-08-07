@@ -232,6 +232,14 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
         rendered = template.render(context).strip()
         self.assertEqual(rendered, 'http://%s/' % self.DOMAIN)
 
+    def test_with_empty_subdomain(self):
+        defaults = {'view': 'home'}
+        template = self.make_template('{% url view subdomain="" %}')
+
+        context = Context(defaults)
+        rendered = template.render(context).strip()
+        self.assertEqual(rendered, 'http://%s/' % self.DOMAIN)
+
     def test_with_subdomain(self):
         defaults = {'view': 'home'}
         template = self.make_template('{% url view subdomain=subdomain %}')
