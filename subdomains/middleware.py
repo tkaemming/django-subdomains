@@ -39,7 +39,7 @@ class SubdomainMiddleware(object):
             request.subdomain = matches.group('subdomain')
         else:
             request.subdomain = None
-            logger.warning('The host %s does not belong to the domain %s, '
+            logger.debug('The host %s does not belong to the domain %s, '
                 'unable to identify the subdomain for this request',
                 request.get_host(), domain)
 
