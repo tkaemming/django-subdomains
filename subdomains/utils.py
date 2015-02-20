@@ -37,7 +37,7 @@ def urljoin(domain, path=None, scheme=None, port=None):
         scheme = getattr(settings, 'DEFAULT_URL_SCHEME', 'http')
 
     if port is not None:
-        domain = '{}:{}'.format(domain, port)
+        domain = '{0}:{1}'.format(domain, port)
 
     return urlunparse((scheme, domain, path or '', None, None, None))
 
