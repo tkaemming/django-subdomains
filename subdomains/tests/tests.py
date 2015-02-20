@@ -248,11 +248,32 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
         context = Context({'view': '__invalid__'})
         self.assertRaises(NoReverseMatch, lambda: template.render(context))
 
+    def test_with_port(self):
+        defaults = {'view': 'home'}
+        template = self.make_template('{% url view port=8888 %}')
+
+        context = Context(defaults)
+        rendered = template.render(context).strip()
+        self.assertEqual(rendered, 'http://%s:8888/' % self.DOMAIN)
+
+    def test_implied_port_from_request(self):
+        defaults = {'view': 'home'}
+        template = self.make_template('{% url view %}')
+
+        request = mock.Mock()
+        request.META = { 'SERVER_PORT': '8888' }
+        request.subdomain = None
+
+        context = Context(dict(defaults, request=request))
+        rendered = template.render(context).strip()
+        self.assertEqual(rendered, 'http://%s:8888/' % self.DOMAIN)
+
     def test_implied_subdomain_from_request(self):
         template = self.make_template('{% url view %}')
         defaults = {'view': 'home'}
 
         request = mock.Mock()
+        request.META = {}
         request.subdomain = None
 
         context = Context(dict(defaults, request=request))
@@ -261,6 +282,7 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
 
         for subdomain in ('www', 'api', 'wildcard'):
             request = mock.Mock()
+            request.META = {}
             request.subdomain = subdomain
 
             context = Context(dict(defaults, request=request))
