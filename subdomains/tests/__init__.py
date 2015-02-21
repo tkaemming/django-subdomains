@@ -1,3 +1,4 @@
+import django
 from django.conf import settings
 
 if not settings.configured:
@@ -19,6 +20,8 @@ if not settings.configured:
         ),
     )
 
+if django.VERSION >= (1, 7):
+    django.setup()
 
 from subdomains.tests.tests import *  # NOQA
 
