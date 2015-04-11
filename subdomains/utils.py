@@ -22,7 +22,7 @@ def current_site_domain():
 get_domain = current_site_domain
 
 
-def urljoin(domain, path=None, scheme=None):
+def urljoin(domain, path=None, scheme=None, port=None):
     """
     Joins a domain, path and scheme part together, returning a full URL.
 
@@ -30,15 +30,19 @@ def urljoin(domain, path=None, scheme=None):
     :param path: the path part of the URL, e.g. ``/example/``
     :param scheme: the scheme part of the URL, e.g. ``http``, defaulting to the
         value of ``settings.DEFAULT_URL_SCHEME``
+    :param port: the port number, if not the default, e.g. ``8000``
     :returns: a full URL
     """
     if scheme is None:
         scheme = getattr(settings, 'DEFAULT_URL_SCHEME', 'http')
 
+    if port is not None:
+        domain = '{0}:{1}'.format(domain, port)
+
     return urlunparse((scheme, domain, path or '', None, None, None))
 
 
-def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
+def reverse(viewname, subdomain=None, scheme=None, port=None, args=None, kwargs=None,
         current_app=None):
     """
     Reverses a URL from the given parameters, in a similar fashion to
@@ -59,7 +63,7 @@ def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
 
     path = simple_reverse(viewname, urlconf=urlconf, args=args, kwargs=kwargs,
         current_app=current_app)
-    return urljoin(domain, path, scheme=scheme)
+    return urljoin(domain, path, scheme=scheme, port=port)
 
 
 #: :func:`reverse` bound to insecure (non-HTTPS) URLs scheme
