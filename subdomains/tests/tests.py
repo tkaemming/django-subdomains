@@ -261,6 +261,7 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
         template = self.make_template('{% url view %}')
 
         request = mock.Mock()
+        request.scheme = 'http'
         request.META = { 'SERVER_PORT': '8888' }
         request.subdomain = None
 
@@ -273,6 +274,7 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
         defaults = {'view': 'home'}
 
         request = mock.Mock()
+        request.scheme = 'http'
         request.META = {}
         request.subdomain = None
 
@@ -282,6 +284,7 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
 
         for subdomain in ('www', 'api', 'wildcard'):
             request = mock.Mock()
+            request.scheme = 'http'
             request.META = {}
             request.subdomain = subdomain
 
@@ -289,3 +292,21 @@ class SubdomainTemplateTagTestCase(SubdomainTestMixin, TestCase):
             rendered = template.render(context).strip()
             self.assertEqual(rendered,
                 'http://%s.%s/' % (subdomain, self.DOMAIN))
+
+    def test_implied_scheme_from_request(self):
+        template = self.make_template('{% url view %}')
+        defaults = {'view': 'home'}
+
+        request = mock.Mock()
+        request.subdomain = None
+        request.META = {}
+        request.scheme = 'http'
+
+        context = Context(dict(defaults, request=request))
+        rendered = template.render(context).strip()
+        self.assertEqual(rendered, 'http://%s/' % self.DOMAIN)
+
+        request.scheme = 'https'
+        context = Context(dict(defaults, request=request))
+        rendered = template.render(context).strip()
+        self.assertEqual(rendered, 'https://%s/' % self.DOMAIN)

@@ -10,7 +10,7 @@ UNSET = object()
 
 
 @simple_tag(register, takes_context=True)
-def url(context, view, subdomain=UNSET, port=UNSET, *args, **kwargs):
+def url(context, view, scheme=None, subdomain=UNSET, port=UNSET, *args, **kwargs):
     """
     Resolves a URL in a template, using subdomain-based URL resolution.
 
@@ -47,4 +47,7 @@ def url(context, view, subdomain=UNSET, port=UNSET, *args, **kwargs):
         else:
             port = None
 
-    return reverse(view, subdomain=subdomain, port=port, args=args, kwargs=kwargs)
+    if scheme is None and request is not None and hasattr(request, 'scheme'):
+        scheme = request.scheme
+
+    return reverse(view, scheme=scheme, subdomain=subdomain, port=port, args=args, kwargs=kwargs)
