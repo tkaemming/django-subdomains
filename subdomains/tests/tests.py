@@ -23,7 +23,7 @@ from subdomains.utils import reverse, urljoin
 
 def prefix_values(dictionary, prefix):
     return dict((key, '%s.%s' % (prefix, value))
-        for key, value in dictionary.iteritems())
+        for key, value in dictionary.items())
 
 
 class SubdomainTestMixin(object):
