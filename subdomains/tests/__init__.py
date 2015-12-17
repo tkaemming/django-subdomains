@@ -26,7 +26,11 @@ from subdomains.tests.tests import *  # NOQA
 def run():
     import sys
 
+    import django
     from django.test.utils import get_runner
+
+    if django.VERSION >= (1, 7):
+        django.setup()
 
     runner = get_runner(settings)()
     failures = runner.run_tests(('subdomains',))
