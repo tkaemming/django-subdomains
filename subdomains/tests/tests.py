@@ -1,7 +1,6 @@
 import mock
 import warnings
 
-from django.contrib.sites.models import Site
 from django.core.urlresolvers import NoReverseMatch, set_urlconf
 from django.template import Context, Template
 from django.test import TestCase
@@ -24,6 +23,7 @@ class SubdomainTestMixin(object):
 
     def setUp(self):
         super(SubdomainTestMixin, self).setUp()
+        from django.contrib.sites.models import Site
         self.site = Site.objects.get_current()
         self.site.domain = self.DOMAIN
         self.site.save()
