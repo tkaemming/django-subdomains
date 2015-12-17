@@ -1,7 +1,10 @@
 import functools
 import mock
-import urlparse
 import warnings
+try:
+    import urlparse
+except ImportError:  # Python 3
+    from urllib import parse as urlparse
 
 from django.core.urlresolvers import NoReverseMatch, set_urlconf
 from django.template import Context, Template
