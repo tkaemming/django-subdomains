@@ -3,18 +3,10 @@ import warnings
 
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import NoReverseMatch, set_urlconf
-from django.test import TestCase
 from django.template import Context, Template
-
-try:
-    from django.test.client import RequestFactory
-except ImportError:
-    from subdomains.compat.requestfactory import RequestFactory  # noqa
-
-try:
-    from django.test.utils import override_settings
-except ImportError:
-    from subdomains.compat.tests import override_settings  # noqa
+from django.test import TestCase
+from django.test.client import RequestFactory
+from django.test.utils import override_settings
 
 from subdomains.middleware import (SubdomainMiddleware,
     SubdomainURLRoutingMiddleware)
