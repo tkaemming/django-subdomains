@@ -9,7 +9,7 @@ Full documentation can be found here: http://django-subdomains.readthedocs.org/
 Build Status
 ------------
 
-.. image:: https://secure.travis-ci.org/tkaemming/django-subdomains.png
+.. image:: https://secure.travis-ci.org/tkaemming/django-subdomains.png?branch=master
    :target: http://travis-ci.org/tkaemming/django-subdomains
 
 Tested on Python 2.6, 2.7, 3.4 and 3.5 on their supported Django versions from
