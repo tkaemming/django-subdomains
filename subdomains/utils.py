@@ -1,3 +1,4 @@
+import six
 import functools
 try:
     from urlparse import urlunparse
@@ -5,6 +6,7 @@ except ImportError:
     from urllib.parse import urlunparse
 
 from django.conf import settings
+from django.utils.functional import lazy
 from django.core.urlresolvers import reverse as simple_reverse
 
 
@@ -61,6 +63,7 @@ def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
         current_app=current_app)
     return urljoin(domain, path, scheme=scheme)
 
+reverse_lazy = lazy(reverse, six.text_type)
 
 #: :func:`reverse` bound to insecure (non-HTTPS) URLs scheme
 insecure_reverse = functools.partial(reverse, scheme='http')
