@@ -39,18 +39,32 @@ To set up subdomain URL routing and reversing in a Django project:
    domain name where users will be accessing your site at.
 4. If you want to use the subdomain-based ``{% url %}`` template tag, add
    ``subdomains`` to your ``INSTALLED_APPS``.
+5. Add ``'django.contrib.sites',`` to your``INSTALLED_APPS``.
+6. Add ``SITE_ID = 1`` to your ``settings.py`` file.
+7. Run the server, log into **admin** (http://127.0.0.1:8080/admin/) and then
+   go the **sites** model and replace the *example.com* domain with your
+   websites domain.
 
 Example Configuration
 ~~~~~~~~~~~~~~~~~~~~~
 
 ::
+    # Make sure it looks like this.
+    INSTALLED_APPS = (
+        # ...
+        'django.contrib.sites',
+        # ...
+    )
+
+    SITE_ID = 1
+
 
     # This is the urlconf that will be used for any subdomain that is not
     # listed in ``SUBDOMAIN_URLCONFS``, or if the HTTP ``Host`` header does not
     # contain the correct domain.
     # If you're planning on using wildcard subdomains, this should correspond
     # to the urlconf that will be used for the wildcard subdomain. For example,
-    # 'accountname.mysite.com' will load the ROOT_URLCONF, since it is not 
+    # 'accountname.mysite.com' will load the ROOT_URLCONF, since it is not
     # defined in ``SUBDOMAIN_URLCONFS``.
     ROOT_URLCONF = 'myproject.urls.account'
 
@@ -153,4 +167,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
