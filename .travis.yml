@@ -11,6 +11,7 @@ env:
   - DJANGO='Django==1.7.*'
   - DJANGO='Django==1.8.*'
   - DJANGO='Django==1.9.*'
+  - DJANGO='Django==1.10.*'
 matrix:
   exclude:
     # Django >= 1.7 does not support Python 2.6
