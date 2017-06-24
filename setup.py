@@ -19,11 +19,11 @@ except ImportError:
 install_requires = ['django']
 tests_require = install_requires + ['mock']
 
-setup(name='django-subdomains',
+setup(name='subdomains',
     version=version,
-    url='http://github.com/tkaemming/django-subdomains/',
-    author='ted kaemming',
-    author_email='ted@kaemming.com',
+    url='http://github.com/abe312/django-subdomains/',
+    author='abe312',
+    author_email='abhineet312@gmail.com',
     description="Subdomain tools for the Django framework, including "
         "subdomain-based URL routing.",
     packages=find_packages(),
