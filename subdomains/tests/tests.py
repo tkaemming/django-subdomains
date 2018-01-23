@@ -1,12 +1,9 @@
 import functools
 import mock
 import warnings
-try:
-    import urlparse
-except ImportError:  # Python 3
-    from urllib import parse as urlparse
+from urllib import parse as urlparse
 
-from django.core.urlresolvers import NoReverseMatch, set_urlconf
+from django.urls import NoReverseMatch, set_urlconf
 from django.template import Context, Template
 from django.test import TestCase
 from django.test.client import RequestFactory
