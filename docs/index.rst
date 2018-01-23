@@ -83,7 +83,7 @@ Resolving Named URLs by Subdomain
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Included is a :func:`subdomains.utils.reverse` function that responds similarly to
-:func:`django.core.urlresolvers.reverse`, but accepts optional ``subdomain``
+:func:`django.urls.reverse`, but accepts optional ``subdomain``
 and ``scheme`` arguments and does not allow a ``urlconf`` parameter.
 
 If no ``subdomain`` argument is provided, the URL will be resolved relative to
@@ -110,7 +110,7 @@ the ``ROOT_URLCONF``::
     >>> reverse('login', subdomain='wildcard')
     'http://wildcard.example.com/login/'
 
-If a URL cannot be resolved, a :exc:`django.core.urlresolvers.NoReverseMatch`
+If a URL cannot be resolved, a :exc:`django.urls.NoReverseMatch`
 will be raised.
 
 Resolving Named URLs in Templates
