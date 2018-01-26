@@ -17,6 +17,9 @@ if not settings.configured:
             'django.middleware.common.CommonMiddleware',
             'subdomains.middleware.SubdomainURLRoutingMiddleware',
         ),
+        ALLOWED_HOSTS=[
+            '.example.com',
+        ],
         TEMPLATES=[
             {
                 'BACKEND': 'django.template.backends.django.DjangoTemplates',
