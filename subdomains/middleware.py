@@ -14,23 +14,22 @@ lower = operator.methodcaller('lower')
 UNSET = object()
 
 
-class SubdomainMiddleware(object):
+class SubdomainMiddleware:
     """
     A middleware class that adds a ``subdomain`` attribute to the current request.
     """
-    def get_domain_for_request(self, request):
-        """
-        Returns the domain that will be used to identify the subdomain part
-        for this request.
-        """
-        return get_domain()
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        self.process_request(request)
+        return self.process_response(request, self.get_response(request))
 
     def process_request(self, request):
         """
         Adds a ``subdomain`` attribute to the ``request`` parameter.
         """
-        domain, host = map(lower,
-            (self.get_domain_for_request(request), request.get_host()))
+        domain, host = map(lower, (get_domain(), request.get_host()))
 
         pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(domain)
         matches = re.match(pattern, host)
@@ -42,6 +41,9 @@ class SubdomainMiddleware(object):
             logger.warning('The host %s does not belong to the domain %s, '
                 'unable to identify the subdomain for this request',
                 request.get_host(), domain)
+
+    def process_response(self, request, response):
+        return response
 
 
 class SubdomainURLRoutingMiddleware(SubdomainMiddleware):
