@@ -18,5 +18,15 @@ Build Status
 .. image:: https://travis-ci.org/abe312/django-subdomains.svg?branch=master
    :target: https://travis-ci.org/abe312/django-subdomains
 
-Tested on Python 2.6, 2.7, 3.4 and 3.5 on their supported Django versions from
-1.4 through 1.9.
+Tested on Python 2.6, 2.7, 3.4, 3.5 and 3.6 on their supported Django versions from
+1.4 through 1.11.
+
+Check the following table for reference:
+
+| Django version	| Python versions                       |
+|    -------------|-------------------------------------  |
+|1.8                |  2.7, 3.2 (until the end of 2016), 3.3, 3.4, 3.5   |
+|1.9  | 1.10	2.7, 3.4, 3.5                              |
+|1.11  | 2.7, 3.4, 3.5, 3.6                               |
+|2.0	| 3.4, 3.5, 3.6                                     |
+|2.1	| 3.5, 3.6, 3.7                                     |
