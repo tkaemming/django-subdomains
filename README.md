@@ -2,15 +2,14 @@
 
 I'd recommend for django versions<=1.9 use django-subdomains from op, otherwise for django 1.10, 1.11 etc use my _subdomains_ version
 
-# django-subdomains
+# subdomains
 
 Subdomain helpers for the Django framework, including subdomain-based URL routing and reversing.
 
 Full documentation can be found here: <http://django-subdomains.readthedocs.org/>
 
 ## Build Status
-
-.. image:: <https://travis-ci.org/abe312/django-subdomains.svg?branch=master> :target: <https://travis-ci.org/abe312/django-subdomains>
+[![Build Status](https://travis-ci.org/abe312/django-subdomains.svg?branch=master)](https://travis-ci.org/abe312/django-subdomains)
 
 Tested on Python 2.6, 2.7, 3.4, 3.5 and 3.6 on their supported Django versions from 1.4 through 1.11.
 
