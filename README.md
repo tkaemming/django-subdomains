@@ -6,7 +6,7 @@ I'd recommend for django versions<=1.9 use django-subdomains from op, otherwise 
 
 Subdomain helpers for the Django framework, including subdomain-based URL routing and reversing.
 
-Full documentation can be found here: <http://django-subdomains.readthedocs.org/>
+Full documentation can be found here: [subdomains](<http://subdomains.readthedocs.org/>)
 
 ## Build Status
 [![Build Status](https://travis-ci.org/abe312/django-subdomains.svg?branch=master)](https://travis-ci.org/abe312/django-subdomains)

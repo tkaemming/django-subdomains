@@ -1,4 +1,4 @@
-django-subdomains
+subdomains
 =================
 
 Subdomain helpers for the Django framework, including subdomain-based URL
@@ -8,15 +8,15 @@ Installation
 ------------
 
 This application is available via the
-`Python Package Index <http://pypi.python.org/pypi/django-subdomains>`_ and can
+`Python Package Index <http://pypi.python.org/pypi/subdomains>`_ and can
 be installed with any Python package manager, such as ``pip`` or ``easy_install``
 by running::
 
-    pip install django-subdomains
+    pip install subdomains
 
 or::
 
-    easy_install django-subdomains
+    easy_install subdomains
 
 It is highly recommended to use package version numbers when using this project
 as a dependency to ensure API consistency.
@@ -50,7 +50,7 @@ Example Configuration
     # contain the correct domain.
     # If you're planning on using wildcard subdomains, this should correspond
     # to the urlconf that will be used for the wildcard subdomain. For example,
-    # 'accountname.mysite.com' will load the ROOT_URLCONF, since it is not 
+    # 'accountname.mysite.com' will load the ROOT_URLCONF, since it is not
     # defined in ``SUBDOMAIN_URLCONFS``.
     ROOT_URLCONF = 'myproject.urls.account'
 
@@ -153,4 +153,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
