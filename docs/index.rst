@@ -34,9 +34,10 @@ To set up subdomain URL routing and reversing in a Django project:
    :class:`django.middleware.common.CommonMiddleware`, the subdomain middleware
    should come before :class:`~django.middleware.common.CommonMiddleware`.
 2. Configure your ``SUBDOMAIN_URLCONFS`` dictionary in your Django settings file.
-3. Ensure that you've set up your ``SITE_ID`` in your Django settings file,
-   and that the ``Site.domain`` attribute for that site corresponds to the
-   domain name where users will be accessing your site at.
+3. Ensure that `django.contrib.sites` is in your INSTALLED_APPS, you've set up your
+   ``SITE_ID`` in your Django settings file, and that the ``Site.domain`` attribute
+   for that site corresponds to the domain name where users will be accessing your
+   site at.
 4. If you want to use the subdomain-based ``{% url %}`` template tag, add
    ``subdomains`` to your ``INSTALLED_APPS``.
 
@@ -82,7 +83,7 @@ Resolving Named URLs by Subdomain
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Included is a :func:`subdomains.utils.reverse` function that responds similarly to
-:func:`django.core.urlresolvers.reverse`, but accepts optional ``subdomain``
+:func:`django.urls.reverse`, but accepts optional ``subdomain``
 and ``scheme`` arguments and does not allow a ``urlconf`` parameter.
 
 If no ``subdomain`` argument is provided, the URL will be resolved relative to
@@ -109,7 +110,7 @@ the ``ROOT_URLCONF``::
     >>> reverse('login', subdomain='wildcard')
     'http://wildcard.example.com/login/'
 
-If a URL cannot be resolved, a :exc:`django.core.urlresolvers.NoReverseMatch`
+If a URL cannot be resolved, a :exc:`django.urls.NoReverseMatch`
 will be raised.
 
 Resolving Named URLs in Templates

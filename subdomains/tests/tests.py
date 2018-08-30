@@ -6,7 +6,10 @@ try:
 except ImportError:  # Python 3
     from urllib import parse as urlparse
 
-from django.core.urlresolvers import NoReverseMatch, set_urlconf
+try:
+    from django.urls import NoReverseMatch, set_urlconf
+except ImportError:  # Django<2.0
+    from django.core.urlresolvers import NoReverseMatch, set_urlconf
 from django.template import Context, Template
 from django.test import TestCase
 from django.test.client import RequestFactory
