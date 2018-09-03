@@ -6,9 +6,9 @@ except ImportError:
 
 from django.conf import settings
 try:
-    from django.urls import reverse as simple_reverse
-except:
     from django.core.urlresolvers import reverse as simple_reverse
+except ImportError:
+    from django.urls import reverse as simple_reverse
 
 
 def current_site_domain():
