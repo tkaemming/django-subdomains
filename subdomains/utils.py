@@ -1,23 +1,76 @@
 import functools
+
 try:
     from urlparse import urlunparse
 except ImportError:
     from urllib.parse import urlunparse
 
 from django.conf import settings
-from django.core.urlresolvers import reverse as simple_reverse
+from django.urls import reverse as simple_reverse
 
 
-def current_site_domain():
+def current_site_object(request=None):
+    from django.conf import settings
     from django.contrib.sites.models import Site
-    domain = Site.objects.get_current().domain
+    from django.contrib.sites.models import SITE_CACHE
+    from django.core.exceptions import ImproperlyConfigured
+    from django.http.request import split_domain_port
 
+    if getattr(settings, 'SITE_ID', ''):
+        site_id = settings.SITE_ID
+        if site_id not in SITE_CACHE:
+            site = Site.objects.get(pk=site_id)
+            SITE_CACHE[site_id] = site
+        return SITE_CACHE[site_id]
+    elif request:
+        host = request.get_host()
+        try:
+            # First attempt to look up the site by host with or without port.
+            if host not in SITE_CACHE:
+                SITE_CACHE[host] = Site.objects.get(domain__iexact=host)
+            return SITE_CACHE[host]
+        except Site.DoesNotExist:
+            try:
+                # Fallback to looking up site after stripping port from the host.
+                domain, port = split_domain_port(host)
+                if domain not in SITE_CACHE:
+                    SITE_CACHE[domain] = Site.objects.get(
+                        domain__iexact=domain)
+            except Site.DoesNotExist:
+                domain, port = split_domain_port(host)
+                for i in range(1, len(domain.split('.'))):
+                    sbd = ".".join(domain.split('.')[i:])
+                    if sbd not in SITE_CACHE:
+                        site = Site.objects.filter(
+                            domain__iexact=sbd).first()
+                        if site:
+                            domain = sbd
+                            SITE_CACHE[domain] = site
+                            break
+                    else:
+                        domain = sbd
+                        break
+                else:
+                    raise ImproperlyConfigured(
+                        "You're using the Django \"sites framework\" without having "
+                        "set the SITE_ID setting. Create a site in your database and "
+                        "set the SITE_ID setting or pass a request to "
+                        "Site.objects.get_current() to fix this error."
+                    )
+
+            return SITE_CACHE[domain]
+
+
+def current_site_domain(request=None):
+    from django.conf import settings
+    domain = current_site_object(request=request).domain
     prefix = 'www.'
     if getattr(settings, 'REMOVE_WWW_FROM_DOMAIN', False) \
             and domain.startswith(prefix):
         domain = domain.replace(prefix, '', 1)
 
     return domain
+
 
 get_domain = current_site_domain
 
@@ -39,7 +92,7 @@ def urljoin(domain, path=None, scheme=None):
 
 
 def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
-        current_app=None):
+            current_app=None):
     """
     Reverses a URL from the given parameters, in a similar fashion to
     :meth:`django.core.urlresolvers.reverse`.
@@ -58,7 +111,7 @@ def reverse(viewname, subdomain=None, scheme=None, args=None, kwargs=None,
         domain = '%s.%s' % (subdomain, domain)
 
     path = simple_reverse(viewname, urlconf=urlconf, args=args, kwargs=kwargs,
-        current_app=current_app)
+                          current_app=current_app)
     return urljoin(domain, path, scheme=scheme)
 
 
