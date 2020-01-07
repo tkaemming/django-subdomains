@@ -16,8 +16,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 exclude_patterns = ['_build']
 
-project = u'django-subdomains'
-copyright = u'2012, ted kaemming'
+project = u'subdomains'
+copyright = u'2018, Abhinet S'
 version = release = '.'.join(map(str, __version__))
 
 html_static_path = ['_static']
@@ -30,8 +30,8 @@ latex_documents = [
 ]
 
 man_pages = [
-    ('index', 'django-subdomains', u'django-subdomains Documentation',
-     [u'ted kaemming'], 1)
+    ('index', 'subdomains', u'subdomains Documentation',
+     [u'Abhineet S'], 1)
 ]
 
 texinfo_documents = [
