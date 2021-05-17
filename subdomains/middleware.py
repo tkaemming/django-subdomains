@@ -18,6 +18,15 @@ class SubdomainMiddleware(object):
     """
     A middleware class that adds a ``subdomain`` attribute to the current request.
     """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    def process_exception(self, request, exception): 
+        return HttpResponse("in exception")
+
     def get_domain_for_request(self, request):
         """
         Returns the domain that will be used to identify the subdomain part
