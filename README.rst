@@ -14,3 +14,6 @@ Build Status
 
 Tested on Python 2.6, 2.7, 3.4 and 3.5 on their supported Django versions from
 1.4 through 1.9.
+
+Added Python 3.10+ and Django 2.0+ support
+=============================================

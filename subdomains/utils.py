@@ -1,3 +1,4 @@
+import django
 import functools
 try:
     from urlparse import urlunparse
@@ -5,7 +6,10 @@ except ImportError:
     from urllib.parse import urlunparse
 
 from django.conf import settings
-from django.core.urlresolvers import reverse as simple_reverse
+if django.__version__[0] >= '2':
+    from django.urls import reverse as simple_reverse
+else:
+    from django.core.urlresolvers import reverse as simple_reverse
 
 
 def current_site_domain():
