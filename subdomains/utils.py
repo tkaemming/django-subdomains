@@ -6,7 +6,7 @@ except ImportError:
     from urllib.parse import urlunparse
 
 from django.conf import settings
-if django.__version__[0] >= 2:
+if django.__version__[0] >= '2':
     from django.urls import reverse as simple_reverse
 else:
     from django.core.urlresolvers import reverse as simple_reverse
