@@ -1,11 +1,16 @@
 import operator
 import logging
-import re
 
 from django.conf import settings
 from django.utils.cache import patch_vary_headers
 
-from subdomains.utils import get_domain
+from subdomains.utils import get_domain, get_subdomain
+
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    # Pre Django 1.10 middleware does not require the mixin.
+    MiddlewareMixin = object
 
 
 logger = logging.getLogger(__name__)
@@ -14,7 +19,7 @@ lower = operator.methodcaller('lower')
 UNSET = object()
 
 
-class SubdomainMiddleware(object):
+class SubdomainMiddleware(MiddlewareMixin):
     """
     A middleware class that adds a ``subdomain`` attribute to the current request.
     """
@@ -32,13 +37,8 @@ class SubdomainMiddleware(object):
         domain, host = map(lower,
             (self.get_domain_for_request(request), request.get_host()))
 
-        pattern = r'^(?:(?P<subdomain>.*?)\.)?%s(?::.*)?$' % re.escape(domain)
-        matches = re.match(pattern, host)
-
-        if matches:
-            request.subdomain = matches.group('subdomain')
-        else:
-            request.subdomain = None
+        request.subdomain, found = get_subdomain(domain, host)
+        if not found:
             logger.warning('The host %s does not belong to the domain %s, '
                 'unable to identify the subdomain for this request',
                 request.get_host(), domain)

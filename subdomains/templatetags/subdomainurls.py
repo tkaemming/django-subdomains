@@ -1,5 +1,7 @@
 from django.template import Library
+from django.urls.exceptions import NoReverseMatch
 
+from subdomains.tag_helpers import silly_tag
 from subdomains.utils import reverse
 
 
@@ -8,8 +10,8 @@ register = Library()
 UNSET = object()
 
 
-@register.simple_tag(takes_context=True)
-def url(context, view, subdomain=UNSET, *args, **kwargs):
+@silly_tag(register, takes_context=True)
+def url(context, view, *args, **kwargs):
     """
     Resolves a URL in a template, using subdomain-based URL resolution.
 
@@ -31,13 +33,26 @@ def url(context, view, subdomain=UNSET, *args, **kwargs):
        template rendering.
 
     """
+    subdomain = kwargs.pop('subdomain', UNSET)
     if subdomain is UNSET:
         request = context.get('request')
         if request is not None:
             subdomain = getattr(request, 'subdomain', None)
         else:
             subdomain = None
-    elif subdomain is '':
+    elif subdomain == '':
         subdomain = None
 
-    return reverse(view, subdomain=subdomain, args=args, kwargs=kwargs)
+    scheme = kwargs.pop('scheme', UNSET)
+    if scheme is UNSET:
+        scheme = None
+
+    asvar = kwargs.pop('_asvar', False)
+
+    try:
+        return reverse(view, scheme=scheme, subdomain=subdomain, args=args, kwargs=kwargs)
+    except NoReverseMatch:
+        if asvar:
+            return ''
+        else:
+            raise
